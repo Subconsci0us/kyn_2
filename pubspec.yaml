@@ -57,6 +57,7 @@ dependencies:
 
   location: ^7.0.1
   rxdart: ^0.28.0
+  geodesy: ^0.10.2
   
   
   
