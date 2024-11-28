@@ -70,7 +70,7 @@ class _NavigationState extends ConsumerState<Navigation> {
         children: [
           const HomePage(),
           const WhatshotHomeScreen(),
-          MapPage(),
+          const MapScreen(),
           const SettingsPage(),
         ],
       ),

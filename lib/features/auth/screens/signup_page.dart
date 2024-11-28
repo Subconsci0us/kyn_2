@@ -6,7 +6,6 @@ import 'package:kyn_2/features/auth/screens/widgets/auth_gradient_button.dart';
 import 'package:kyn_2/core/common/loader.dart';
 import 'package:kyn_2/core/navigation/navigation.dart';
 
-
 class SignUpPage extends ConsumerStatefulWidget {
   static route() => MaterialPageRoute(
         builder: (context) => const SignUpPage(),

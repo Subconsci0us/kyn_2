@@ -5,6 +5,7 @@ enum Category {
   Emergency,
   Event,
   Business,
+  Services,
 }
 
 class Post {
