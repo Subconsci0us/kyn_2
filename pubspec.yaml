@@ -52,6 +52,11 @@ dependencies:
   any_link_preview: ^3.0.2
   # for maps related
   google_maps_flutter: ^2.10.0
+  geoflutterfire_plus: ^0.0.32
+  location: ^7.0.1
+  rxdart: ^0.28.0
+  
+  
   
 
 dev_dependencies:

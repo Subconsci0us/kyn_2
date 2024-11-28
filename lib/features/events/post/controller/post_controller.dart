@@ -57,7 +57,9 @@ class PostController extends StateNotifier<bool> {
     required BuildContext context,
     required String title,
     String? description,
-    required Category category, // Changed from String to Category
+    required Category category,
+    // Changed from String to Category
+    Map<String, dynamic>? position,
     File? file,
   }) async {
     state = true;
@@ -87,19 +89,19 @@ class PostController extends StateNotifier<bool> {
 
     // Create the post object
     final Post post = Post(
-      id: postId,
-      title: title,
-      category: category, // Set category
-      upvotes: [],
-      downvotes: [],
-      commentCount: 0,
-      username: user.name,
-      uid: user.uid,
-      createdAt: DateTime.now(),
-
-      description: description,
-      link: imageUrl, // This will be null for text posts
-    );
+        id: postId,
+        title: title,
+        category: category, // Set category
+        upvotes: [],
+        downvotes: [],
+        commentCount: 0,
+        username: user.name,
+        uid: user.uid,
+        createdAt: DateTime.now(),
+        description: description,
+        link: imageUrl,
+        position: position // This will be null for text posts
+        );
 
     // Add the post to the repository
     final res = await _postRepository.addPost(post);

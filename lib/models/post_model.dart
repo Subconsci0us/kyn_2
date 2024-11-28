@@ -20,6 +20,7 @@ class Post {
   final String uid;
   final DateTime createdAt;
   final Category category;
+  final Map<String, dynamic>? position; // Holds geohash and GeoPoint
 
   Post({
     required this.id,
@@ -33,6 +34,7 @@ class Post {
     required this.uid,
     required this.createdAt,
     required this.category,
+    this.position, // Optional field for position
   });
 
   Post copyWith({
@@ -47,6 +49,7 @@ class Post {
     String? uid,
     DateTime? createdAt,
     Category? category,
+    Map<String, dynamic>? position,
   }) {
     return Post(
       id: id ?? this.id,
@@ -60,6 +63,7 @@ class Post {
       uid: uid ?? this.uid,
       createdAt: createdAt ?? this.createdAt,
       category: category ?? this.category,
+      position: position ?? this.position,
     );
   }
 
@@ -76,6 +80,7 @@ class Post {
       'uid': uid,
       'createdAt': createdAt.millisecondsSinceEpoch,
       'category': category.name, // Convert enum to string
+      'position': position, // Save position as a map
     };
   }
 
@@ -108,6 +113,7 @@ class Post {
         (e) => e.name == data['category'],
         orElse: () => Category.Event, // Default category
       ),
+      position: data['position'] as Map<String, dynamic>?, // Parse position
     );
   }
 
@@ -127,12 +133,13 @@ class Post {
         (e) => e.name == map['category'],
         orElse: () => Category.Event, // Default category
       ),
+      position: map['position'] as Map<String, dynamic>?, // Parse position
     );
   }
 
   @override
   String toString() {
-    return 'Post(id: $id, title: $title, link: $link, description: $description, upvotes: $upvotes, downvotes: $downvotes, commentCount: $commentCount, username: $username, uid: $uid, createdAt: $createdAt, category: $category)';
+    return 'Post(id: $id, title: $title, link: $link, description: $description, upvotes: $upvotes, downvotes: $downvotes, commentCount: $commentCount, username: $username, uid: $uid, createdAt: $createdAt, category: $category, position: $position)';
   }
 
   @override
@@ -150,7 +157,8 @@ class Post {
         other.username == username &&
         other.uid == uid &&
         other.createdAt == createdAt &&
-        other.category == category;
+        other.category == category &&
+        mapEquals(other.position, position);
   }
 
   @override
@@ -165,6 +173,7 @@ class Post {
         username.hashCode ^
         uid.hashCode ^
         createdAt.hashCode ^
-        category.hashCode;
+        category.hashCode ^
+        position.hashCode;
   }
 }
