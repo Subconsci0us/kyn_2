@@ -1,7 +1,9 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geoflutterfire_plus/geoflutterfire_plus.dart';
 import 'package:kyn_2/core/common/loader.dart';
 import 'package:kyn_2/core/theme/pallete.dart';
 import 'package:kyn_2/core/theme/theme.dart';
@@ -49,17 +51,13 @@ class _AddPostTypeScreenState extends ConsumerState<AddPostTypeScreen> {
     }
   }
 
-  Future<void> fetchLocation() async {
+  Future<void> addLocation() async {
     try {
-      final locData = await location.getLocation();
-      print(
-          "Location fetched: Latitude: ${locData.latitude}, Longitude: ${locData.longitude}"); // Debug: After fetching location
+      final GeoFirePoint geoFirePoint =
+          GeoFirePoint(GeoPoint(24.971830, 67.117183));
 
       setState(() {
-        position = {
-          'latitude': locData.latitude,
-          'longitude': locData.longitude,
-        };
+        position = geoFirePoint.data;
       });
     } catch (e) {
       showSnackBar(context, 'Failed to get location: $e');
@@ -189,7 +187,7 @@ class _AddPostTypeScreenState extends ConsumerState<AddPostTypeScreen> {
                   ElevatedButton(
                     onPressed: () {
                       print("Button pressed!");
-                      fetchLocation();
+                      addLocation();
                     },
                     child: Text(
                       position == null

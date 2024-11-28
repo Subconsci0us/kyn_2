@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
@@ -12,9 +13,24 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   late GoogleMapController mapController;
 
-  Location location = new Location();
+  // Detection range from the center point.
+  double radiusInKm = 50;
 
-  final LatLng googlePlex = const LatLng(24.8607, 67.0011);
+  // Field name of Cloud Firestore documents where the geohash is saved.
+  String field = 'position';
+
+  // Reference to the Firestore collection.
+  final CollectionReference<Map<String, dynamic>> collectionReference =
+      FirebaseFirestore.instance.collection('posts');
+
+  // Function to get GeoPoint instance from Cloud Firestore document data.
+  GeoPoint geopointFrom(Map<String, dynamic> data) =>
+      (data['position'] as Map<String, dynamic>)['geopoint'] as GeoPoint;
+
+  Location location = Location();
+
+  // Initial placeholder location
+  LatLng googlePlex = const LatLng(24.8607, 67.0011);
 
   // Maintain a set of markers
   final Set<Marker> _markers = {};
@@ -23,10 +39,36 @@ class _MapScreenState extends State<MapScreen> {
   LatLng _currentPosition = const LatLng(24.8607, 67.0011);
 
   @override
+  void initState() {
+    super.initState();
+    _loadMarkers();
+    _getCurrentLocation(); // Fetch current location when screen loads
+  }
+
+  // Function to fetch current location and set it as the starting position
+  Future<void> _getCurrentLocation() async {
+    var pos = await location.getLocation();
+
+    setState(() {
+      googlePlex = LatLng(pos.latitude!,
+          pos.longitude!); // Set the current location as the starting point
+      _currentPosition = googlePlex; // Update current position
+    });
+    mapController.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: googlePlex,
+          zoom: 17.0,
+        ),
+      ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Map Screen'),
+        title: const Center(child: Text('Maps')),
       ),
       body: Stack(
         children: [
@@ -42,19 +84,6 @@ class _MapScreenState extends State<MapScreen> {
               _currentPosition = position.target; // Update current position
             },
           ),
-          Positioned(
-            bottom: 50,
-            right: 10,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
-                shape: const CircleBorder(),
-                padding: const EdgeInsets.all(15),
-              ),
-              onPressed: _animateToUser,
-              child: const Icon(Icons.pin_drop, color: Colors.white),
-            ),
-          ),
         ],
       ),
     );
@@ -64,14 +93,14 @@ class _MapScreenState extends State<MapScreen> {
     mapController = controller;
   }
 
-  void _addMarker() {
+  void _addMarker(LatLng position, String title) {
     final marker = Marker(
       markerId: MarkerId(DateTime.now().toString()), // Unique marker ID
-      position: _currentPosition, // Use updated camera position
+      position: position, // Position from the data
       icon: BitmapDescriptor.defaultMarker,
-      infoWindow: const InfoWindow(
-        title: 'Magic Marker',
-        snippet: '🍄🍄🍄',
+      infoWindow: InfoWindow(
+        title: title,
+        snippet: 'Location Marker',
       ),
     );
 
@@ -80,38 +109,20 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
-  _animateToUser() async {
-    var pos = await location.getLocation();
-    print(
-        "Location fetched: Latitude: ${pos.latitude}, Longitude: ${pos.longitude}"); // Debug: After fetching location
+  Future<void> _loadMarkers() async {
+    // Fetch posts from Firestore
+    QuerySnapshot<Map<String, dynamic>> snapshot =
+        await collectionReference.get();
 
-    // Ensure latitude and longitude are not null
-    if (pos.latitude != null && pos.longitude != null) {
-      mapController.animateCamera(
-        CameraUpdate.newCameraPosition(
-          CameraPosition(
-            target: LatLng(
-                pos.latitude!, pos.longitude!), // Use the non-nullable values
-            zoom: 17.0,
-          ),
-        ),
-      );
-    } else {
-      // Handle the case where location is null (log, show a message, etc.)
-      print("Unable to fetch user location.");
+    for (var doc in snapshot.docs) {
+      // Get GeoPoint from Firestore document
+      GeoPoint geoPoint = geopointFrom(doc.data());
+      LatLng position = LatLng(geoPoint.latitude, geoPoint.longitude);
+      String title =
+          doc.data()['title'] ?? 'Unknown'; // Title for the marker info window
+
+      // Add marker to the map
+      _addMarker(position, title);
     }
   }
 }
-
-
-
-
-  /* 
-        markers: {
-          Marker(
-            markerId: const MarkerId("sourceLocation"),
-            icon: BitmapDescriptor.defaultMarker,
-            position: googlePlex,
-          ),
-        },
-        */
