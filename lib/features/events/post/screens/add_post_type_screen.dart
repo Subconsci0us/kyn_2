@@ -54,7 +54,7 @@ class _AddPostTypeScreenState extends ConsumerState<AddPostTypeScreen> {
   Future<void> addLocation() async {
     try {
       final GeoFirePoint geoFirePoint =
-          GeoFirePoint(GeoPoint(24.971830, 67.117183));
+          GeoFirePoint(GeoPoint(24.847164, 67.036979));
 
       setState(() {
         position = geoFirePoint.data;

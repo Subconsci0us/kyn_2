@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kyn_2/core/constants/constants.dart';
-import 'package:kyn_2/core/theme/pallete.dart';
 import 'package:kyn_2/features/auth/controller/auth_controller.dart';
 import 'package:kyn_2/features/events/post/controller/post_controller.dart';
 import 'package:kyn_2/features/events/post/screens/comments_screen.dart';
 import 'package:kyn_2/features/events/post/screens/post_view.dart';
-import 'package:kyn_2/models/comment_model.dart';
 import 'package:kyn_2/models/post_model.dart';
 
 class PostCard extends ConsumerWidget {
@@ -163,51 +161,21 @@ class PostCard extends ConsumerWidget {
 
               // Footer Section with Location and Attendees
               const Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     // Location
                     Row(
                       children: [
-                        const Icon(Icons.location_on,
-                            color: Colors.grey, size: 20),
-                        const SizedBox(width: 4),
+                        Icon(Icons.location_on, color: Colors.grey, size: 20),
+                        SizedBox(width: 4),
                         Text(
                           "36 Guild Street London, UK ",
-                          style:
-                              const TextStyle(fontSize: 12, color: Colors.grey),
+                          style: TextStyle(fontSize: 12, color: Colors.grey),
                         ),
                       ],
                     ),
-                    /*
-                // Attendees
-                Row(
-                  children: [
-                    // Profile Pictures
-                    Stack(
-                      children: [
-                        for (int i = 0; i < post.attendees.length; i++)
-                          Positioned(
-                            left: i * 20.0,
-                            child: CircleAvatar(
-                              radius: 12,
-                              backgroundImage: NetworkImage(
-                                post.attendees[i].profileImage,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      '+${post.attendees.length} Going',
-                      style: const TextStyle(fontSize: 12, color: Colors.grey),
-                    ),
-                  ],
-                ),
-                */
                   ],
                 ),
               ),

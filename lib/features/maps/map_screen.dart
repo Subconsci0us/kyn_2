@@ -1,8 +1,9 @@
 import 'dart:math' as math;
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:kyn_2/features/events/post/widget/post_card.dart';
+import 'package:kyn_2/models/post_model.dart';
 import 'package:location/location.dart';
 
 class MapScreen extends StatefulWidget {
@@ -16,15 +17,12 @@ class _MapScreenState extends State<MapScreen> {
   late GoogleMapController _mapController;
   final Location _location = Location();
 
-  // Configurable parameters
-  double _radiusInKm = 1;
+  double _radiusInKm = 0.2;
   LatLng _currentPosition = const LatLng(24.8607, 67.0011);
 
-  // Marker collections
-  final Set<Marker> _allMarkers = {};
+  final List<Marker> _allMarkers = [];
   final Set<Marker> _displayedMarkers = {};
-
-  static const double earthRadius = 6371.0; // Earth radius in kilometers
+  Post? _selectedPost; // To store the currently selected post
 
   @override
   void initState() {
@@ -32,59 +30,43 @@ class _MapScreenState extends State<MapScreen> {
     _initializeMap();
   }
 
-  @override
-  void dispose() {
-    _mapController.dispose();
-    super.dispose();
-  }
-
   Future<void> _initializeMap() async {
-    try {
-      await _loadMarkers();
-      await _getCurrentLocation();
-    } catch (e) {
-      debugPrint('Initialization error: $e');
-    }
+    await _loadMarkers();
+    await _getCurrentLocation();
   }
 
   Future<void> _getCurrentLocation() async {
     try {
       final pos = await _location.getLocation();
-      if (pos.latitude != null && pos.longitude != null) {
-        final currentPos = LatLng(pos.latitude!, pos.longitude!);
+      final currentPos = LatLng(pos.latitude!, pos.longitude!);
 
-        setState(() {
-          _currentPosition = currentPos;
-          _filterMarkersByRadius();
-        });
+      setState(() {
+        _currentPosition = currentPos;
+        _filterMarkersByRadius();
+      });
 
-        _mapController.animateCamera(
-          CameraUpdate.newCameraPosition(
-            CameraPosition(target: currentPos, zoom: 17.0),
-          ),
-        );
-      }
+      _mapController.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(target: currentPos, zoom: 17.0),
+        ),
+      );
     } catch (e) {
       debugPrint('Location error: $e');
     }
   }
 
   void _filterMarkersByRadius() {
-    final filteredMarkers = _allMarkers.where((marker) {
-      final distance = _calculateDistance(_currentPosition, marker.position);
-      return distance <= _radiusInKm;
-    }).toSet();
-
-    if (!setEquals(_displayedMarkers, filteredMarkers)) {
-      setState(() {
-        _displayedMarkers
-          ..clear()
-          ..addAll(filteredMarkers);
-      });
-    }
+    setState(() {
+      _displayedMarkers.clear();
+      _displayedMarkers.addAll(_allMarkers.where((marker) {
+        final distance = _calculateDistance(_currentPosition, marker.position);
+        return distance <= _radiusInKm;
+      }));
+    });
   }
 
   double _calculateDistance(LatLng point1, LatLng point2) {
+    const earthRadius = 6371.0;
     final lat1 = point1.latitude * (math.pi / 180);
     final lon1 = point1.longitude * (math.pi / 180);
     final lat2 = point2.latitude * (math.pi / 180);
@@ -112,7 +94,9 @@ class _MapScreenState extends State<MapScreen> {
         final position = LatLng(geoPoint.latitude, geoPoint.longitude);
         final title = doc.data()['title'] ?? 'Unknown';
 
-        _addMarker(position, title);
+        // Assuming you have a Post model
+        final post = Post.fromMap(doc.data());
+        _addMarker(position, title, post);
       }
 
       _filterMarkersByRadius();
@@ -121,12 +105,16 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
-  void _addMarker(LatLng position, String title) {
-    final markerId = MarkerId('${position.latitude},${position.longitude}');
+  void _addMarker(LatLng position, String title, Post post) {
     final marker = Marker(
-      markerId: markerId,
+      markerId: MarkerId(UniqueKey().toString()),
       position: position,
-      infoWindow: InfoWindow(title: title, snippet: 'Location Marker'),
+      infoWindow: InfoWindow(title: title),
+      onTap: () {
+        setState(() {
+          _selectedPost = post; // Set the selected post
+        });
+      },
     );
 
     _allMarkers.add(marker);
@@ -135,7 +123,7 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Center(child: Text('Maps'))),
+      appBar: AppBar(title: const Center(child: Text('Around you'))),
       body: Stack(
         children: [
           GoogleMap(
@@ -146,16 +134,21 @@ class _MapScreenState extends State<MapScreen> {
             onMapCreated: (controller) => _mapController = controller,
             myLocationEnabled: true,
             markers: _displayedMarkers,
-            onCameraIdle: _filterMarkersByRadius,
             circles: {
               Circle(
                 circleId: const CircleId("detection_radius"),
                 center: _currentPosition,
-                radius: _radiusInKm * 1000, // Convert km to meters
+                radius: _radiusInKm * 1000,
                 fillColor: Colors.blue.withOpacity(0.1),
                 strokeColor: Colors.blue,
                 strokeWidth: 2,
               )
+            },
+            onTap: (LatLng position) {
+              // Deselect the post card when the map is tapped
+              setState(() {
+                _selectedPost = null;
+              });
             },
           ),
           Positioned(
@@ -171,10 +164,11 @@ class _MapScreenState extends State<MapScreen> {
                 children: [
                   Text('Radius: ${_radiusInKm.toStringAsFixed(1)} km'),
                   Slider(
-                    value: _radiusInKm,
-                    min: 1,
-                    max: 30,
-                    divisions: 150,
+                    value: _radiusInKm.clamp(
+                        1.0, 30.0), // Ensure the value is within bounds
+                    min: 1.0,
+                    max: 30.0, // Update the max value here
+                    divisions: 100, // Adjust based on the new range
                     label: _radiusInKm.toStringAsFixed(1),
                     onChanged: (value) {
                       setState(() {
@@ -187,6 +181,13 @@ class _MapScreenState extends State<MapScreen> {
               ),
             ),
           ),
+          if (_selectedPost != null)
+            Positioned(
+              bottom: 55,
+              left: 35,
+              right: 35,
+              child: PostCard(post: _selectedPost!), // Display the PostCard
+            ),
         ],
       ),
     );
