@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:kyn_2/features/events/feed/feed_screen.dart';
 import 'package:kyn_2/features/events/home/delegates/search_community_delegate.dart';
+import 'package:kyn_2/features/events/post/screens/add_post_type_screen.dart'; // Import the screen
 
 class WhatshotHomeScreen extends ConsumerWidget {
   const WhatshotHomeScreen({
@@ -34,6 +35,17 @@ class WhatshotHomeScreen extends ConsumerWidget {
         ],
       ),
       body: const FeedScreen(),
+      // Floating Action Button
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).push(
+            AddPostTypeScreen.route(), // Navigates to AddPostTypeScreen
+          );
+        },
+        backgroundColor:
+            const Color.fromARGB(255, 198, 75, 255), // FAB background color
+        child: const Icon(Icons.add, color: Colors.white), // Plus icon
+      ),
     );
   }
 }

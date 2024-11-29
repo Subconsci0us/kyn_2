@@ -1,98 +1,222 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart'; // For formatting dates
-import 'package:kyn_2/core/constants/constants.dart';
-import 'package:kyn_2/models/post_model.dart'; // Ensure this import is correct
+import 'package:kyn_2/models/post_model.dart';
 
-class PostView extends StatelessWidget {
+class PostView extends StatefulWidget {
   final Post post;
 
   const PostView({super.key, required this.post});
 
   static Route route(Post post) {
     return MaterialPageRoute(
-      builder: (context) => PostView(post: post), // Corrected class name here
+      builder: (context) => PostView(post: post),
     );
   }
 
   @override
+  _PostViewState createState() => _PostViewState();
+}
+
+class _PostViewState extends State<PostView> {
+  bool showFullDescription = false;
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Post Details'),
-      ),
-      body: ListView(
-        children: [
-          // Display the image at the top
-          CachedNetworkImage(
-            imageUrl: post.link ?? Constants.bannerDefault,
-            fit: BoxFit.cover,
-            placeholder: (context, url) => const Center(
-              child: CircularProgressIndicator(),
-            ),
-            errorWidget: (context, url, error) => const Icon(Icons.error),
-          ),
-          const SizedBox(height: 16),
-          // Display the title
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              post.title,
-              style: GoogleFonts.noticiaText(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          // Display the poster's name if available
-          if (post.username != null) ...[
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                'By ${post.username}',
-                style: GoogleFonts.roboto(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.grey[700],
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header with background image
+            Stack(
+              children: [
+                widget.post.link != null && widget.post.link!.isNotEmpty
+                    ? Image.network(
+                        widget.post.link!,
+                        height: 250,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      )
+                    : Image.asset(
+                        "assets/images/logo.jpg",
+                        height: 250,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
+                Container(
+                  height: 250,
+                  color: Colors.black.withOpacity(0.5),
                 ),
+                SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        IconButton(
+                          icon:
+                              const Icon(Icons.arrow_back, color: Colors.white),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.share, color: Colors.white),
+                          onPressed: () {},
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            // Event details
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.post.title,
+                    style: const TextStyle(
+                        fontSize: 35, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      const CircleAvatar(
+                        radius: 30,
+                        backgroundImage: AssetImage('assets/images/logo.jpg'),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(widget.post.username,
+                          style: const TextStyle(fontSize: 16)),
+                      const Spacer(),
+                      TextButton(
+                        onPressed: () {},
+                        child: const Text('Follow'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Date
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.calendar_today,
+                            color: Colors.black,
+                            size: 30,
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            '14 December, 2021',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 12), // Spacing between rows
+
+                      // Time
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.access_time,
+                            color: Colors.black,
+                            size: 30,
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            '4:00PM - 9:00PM',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 12), // Spacing between rows
+
+                      // Location
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(
+                            Icons.location_on,
+                            color: Colors.black,
+                            size: 30,
+                          ),
+                          SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Gala Convention Center, 36 Guild Street, London, UK',
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // About Event
+                  const Text(
+                    'About Event',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+
+                  // Description with "View More" Button
+                  Text(
+                    showFullDescription
+                        ? widget.post.description ?? ""
+                        : (widget.post.description ?? "").length > 750
+                            ? "${widget.post.description!.substring(0, 750)}..."
+                            : widget.post.description ?? "",
+                    style: TextStyle(color: Colors.grey[700]),
+                  ),
+                  const SizedBox(height: 8),
+                  if ((widget.post.description ?? "").length > 100)
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          showFullDescription = !showFullDescription;
+                        });
+                      },
+                      child: Center(
+                        child: Text(
+                          showFullDescription ? "Show Less" : "View More",
+                        ),
+                      ),
+                    ),
+
+                  const SizedBox(height: 16),
+
+                  // Attending Button
+                  Center(
+                    child: ElevatedButton.icon(
+                      onPressed: () {},
+                      label: const Text("Attending"),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 32, vertical: 12),
+                        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 8),
           ],
-          // Display the categories (topics)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(post.category.name),
-          ),
-          const SizedBox(height: 16),
-          // Display the content
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              post.description ?? "",
-              style: GoogleFonts.roboto(
-                fontSize: 16,
-                fontWeight: FontWeight.normal,
-                height: 1.5,
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          // Display the last updated date
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              'Updated at: ${DateFormat('yyyy-MM-dd HH:mm').format(post.createdAt)}',
-              style: GoogleFonts.roboto(
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-                color: Colors.grey[600],
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
