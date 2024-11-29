@@ -175,8 +175,8 @@ class _PostViewState extends State<PostView> {
                   Text(
                     showFullDescription
                         ? widget.post.description ?? ""
-                        : (widget.post.description ?? "").length > 750
-                            ? "${widget.post.description!.substring(0, 750)}..."
+                        : (widget.post.description ?? "").length > 650
+                            ? "${widget.post.description!.substring(0, 650)}..."
                             : widget.post.description ?? "",
                     style: TextStyle(color: Colors.grey[700]),
                   ),
