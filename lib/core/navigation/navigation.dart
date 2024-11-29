@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kyn_2/features/auth/controller/auth_controller.dart';
 import 'package:kyn_2/core/theme/theme.dart';
-import 'package:kyn_2/features/explore/home_screen.dart';
+import 'package:kyn_2/features/explore/explore_screen.dart';
 import 'package:kyn_2/features/maps/map_screen.dart';
 import 'package:kyn_2/features/settings/screens/settings_screen.dart';
 import 'package:kyn_2/features/events/home/screens/home_screen_hot.dart';

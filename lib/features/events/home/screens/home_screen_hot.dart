@@ -23,17 +23,6 @@ class WhatshotHomeScreen extends ConsumerWidget {
           ),
         ),
         centerTitle: true,
-        /*
-        actions: [
-          IconButton(
-            onPressed: () {
-              showSearch(
-                  context: context, delegate: SearchCommunityDelegate(ref));
-            },
-            icon: const Icon(Icons.search),
-          ),
-        ],
-        */
       ),
       body: const FeedScreen(),
       // Floating Action Button

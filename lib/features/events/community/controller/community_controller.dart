@@ -17,6 +17,11 @@ final getAllPosts = StreamProvider((ref) {
   return communityController.getAllPosts();
 });
 
+final getAllPostsByUser = StreamProvider.family((ref, String uid) {
+  final communityController = ref.watch(communityControllerProvider.notifier);
+  return communityController.getAllPostsByUser(uid);
+});
+
 final getCommunityByNameProvider = StreamProvider.family((ref, String name) {
   return ref
       .watch(communityControllerProvider.notifier)
@@ -59,6 +64,10 @@ class CommunityController extends StateNotifier<bool> {
 
   Stream<List<Post>> getAllPosts() {
     return _communityRepository.getAllPosts();
+  }
+
+  Stream<List<Post>> getAllPostsByUser(String uid) {
+    return _communityRepository.getAllPostsByUser(uid);
   }
 
   void createCommunity(String name, BuildContext context) async {

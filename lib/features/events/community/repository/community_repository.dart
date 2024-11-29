@@ -39,6 +39,22 @@ class CommunityRepository {
         );
   }
 
+  Stream<List<Post>> getAllPostsByUser(String uid) {
+    return FirebaseFirestore.instance
+        .collection("posts")
+        .where("uid", isEqualTo: uid) // Filter by userId
+        .snapshots()
+        .map(
+          (event) => event.docs
+              .map(
+                (e) => Post.fromMap(
+                  e.data() as Map<String, dynamic>,
+                ),
+              )
+              .toList(),
+        );
+  }
+
   FutureVoid createCommunity(Community community) async {
     try {
       var communityDoc = await _communities.doc(community.name).get();
