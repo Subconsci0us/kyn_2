@@ -4,7 +4,6 @@ import 'package:kyn_2/core/common/error_text.dart';
 import 'package:kyn_2/core/common/loader.dart';
 import 'package:kyn_2/features/events/post/controller/post_controller.dart';
 import 'package:kyn_2/features/events/post/widget/comment_card.dart';
-import 'package:kyn_2/features/events/post/widget/post_card.dart';
 import 'package:kyn_2/models/post_model.dart';
 
 class CommentsScreen extends ConsumerStatefulWidget {
@@ -23,6 +22,7 @@ class CommentsScreen extends ConsumerStatefulWidget {
 
 class _CommentsScreenState extends ConsumerState<CommentsScreen> {
   final commentController = TextEditingController();
+  bool showFullDescription = false;
 
   @override
   void dispose() {
@@ -46,53 +46,128 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
     return Scaffold(
       appBar: AppBar(),
       body: ref.watch(getPostByIdProvider(widget.postId)).when(
-          data: (data) {
-            return SingleChildScrollView(
-              child: Column(
-                children: [
-                  PostCard(post: data),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextField(
-                      onSubmitted: (val) => addComment(data),
-                      controller: commentController,
-                      decoration: const InputDecoration(
-                        hintText: 'What are your thoughts?',
-                        filled: true,
-                        border: InputBorder.none,
-                      ),
+            data: (data) {
+              return SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildPostImage(data),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: _buildPostTitleAndDescription(data),
                     ),
-                  ),
-                  ref.watch(getPostCommentsProvider(widget.postId)).when(
-                      data: (comments) {
-                        return ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: comments.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            final comment = comments[index];
-                            return CommentCard(comment: comment);
-                          },
-                        );
-                      },
-                      error: (error, stackTrace) {
-                        return ErrorText(
-                          error: error.toString(),
-                        );
-                      },
-                      loading: () => Loader(
-                            color: Colors.red,
-                          )),
-                ],
+                    _buildCommentInputField(data),
+                    _buildCommentsList(),
+                  ],
+                ),
+              );
+            },
+            error: (error, stackTrace) => ErrorText(
+              error: error.toString(),
+            ),
+            loading: () => Loader(color: Colors.red),
+          ),
+    );
+  }
+
+  Widget _buildPostImage(Post data) {
+    return Stack(
+      children: [
+        data.link != null && data.link!.isNotEmpty
+            ? Image.network(
+                data.link!,
+                height: 250,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              )
+            : Image.asset(
+                "assets/images/logo.jpg",
+                height: 250,
+                width: double.infinity,
+                fit: BoxFit.cover,
               ),
+        Container(
+          height: 250,
+          color: Colors.black.withOpacity(0.5),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPostTitleAndDescription(Post data) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          data.title,
+          style: const TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          showFullDescription
+              ? data.description ?? ""
+              : (data.description ?? "").length > 650
+                  ? "${data.description!.substring(0, 650)}..."
+                  : data.description ?? "",
+          style: TextStyle(color: Colors.grey[700]),
+        ),
+        const SizedBox(height: 8),
+        if ((data.description ?? "").length > 100)
+          TextButton(
+            onPressed: () {
+              setState(() {
+                showFullDescription = !showFullDescription;
+              });
+            },
+            child: Center(
+              child: Text(
+                showFullDescription ? "Show Less" : "View More",
+                style: const TextStyle(color: Colors.blue),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildCommentInputField(Post data) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: TextField(
+        onSubmitted: (val) => addComment(data),
+        controller: commentController,
+        decoration: const InputDecoration(
+          hintText: 'What are your thoughts?',
+          filled: true,
+          fillColor: Colors.grey,
+          border: OutlineInputBorder(),
+          contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCommentsList() {
+    return ref.watch(getPostCommentsProvider(widget.postId)).when(
+          data: (comments) {
+            return ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: comments.length,
+              itemBuilder: (BuildContext context, int index) {
+                final comment = comments[index];
+                return CommentCard(comment: comment);
+              },
             );
           },
-          error: (error, stackTrace) => ErrorText(
-                error: error.toString(),
-              ),
-          loading: () => Loader(
-                color: Colors.red,
-              )),
-    );
+          error: (error, stackTrace) {
+            return ErrorText(error: error.toString());
+          },
+          loading: () => Loader(color: Colors.red),
+        );
   }
 }

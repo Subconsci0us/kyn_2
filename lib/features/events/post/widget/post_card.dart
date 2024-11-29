@@ -25,10 +25,6 @@ class PostCard extends ConsumerWidget {
     ref.read(postControllerProvider.notifier).upvote(post);
   }
 
-  void downvotePost(WidgetRef ref) async {
-    ref.read(postControllerProvider.notifier).downvote(post);
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(userProvider);

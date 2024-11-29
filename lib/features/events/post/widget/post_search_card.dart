@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:kyn_2/features/events/post/screens/post_view.dart';
 import 'package:kyn_2/models/post_model.dart';
 
-class PostSearchCard extends StatelessWidget {
+class PostSearchCard extends ConsumerWidget {
   final Post post;
 
   const PostSearchCard({
@@ -11,7 +13,7 @@ class PostSearchCard extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return GestureDetector(
       onTap: () {
         // Navigate to PostView when tapped

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kyn_2/features/auth/controller/auth_controller.dart';
+import 'package:kyn_2/features/events/post/controller/post_controller.dart';
+import 'package:kyn_2/features/events/post/screens/comments_screen.dart';
 import 'package:kyn_2/models/post_model.dart';
 
-class PostView extends StatefulWidget {
+class PostView extends ConsumerStatefulWidget {
   final Post post;
 
   const PostView({super.key, required this.post});
@@ -16,17 +20,25 @@ class PostView extends StatefulWidget {
   _PostViewState createState() => _PostViewState();
 }
 
-class _PostViewState extends State<PostView> {
+class _PostViewState extends ConsumerState<PostView> {
   bool showFullDescription = false;
+
+  void deletePost(BuildContext context) async {
+    ref.read(postControllerProvider.notifier).deletePost(widget.post, context);
+  }
+
+  void upvotePost(WidgetRef ref) async {
+    ref.read(postControllerProvider.notifier).upvote(widget.post);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final user = ref.watch(userProvider);
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header with background image
             Stack(
               children: [
                 widget.post.link != null && widget.post.link!.isNotEmpty
@@ -57,9 +69,26 @@ class _PostViewState extends State<PostView> {
                               const Icon(Icons.arrow_back, color: Colors.white),
                           onPressed: () => Navigator.pop(context),
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.share, color: Colors.white),
-                          onPressed: () {},
+                        Row(
+                          children: [
+                            IconButton(
+                              icon:
+                                  const Icon(Icons.share, color: Colors.white),
+                              onPressed: () {},
+                            ),
+                            if (widget.post.uid ==
+                                user?.uid) // Ensure user is available
+                              IconButton(
+                                onPressed: () {
+                                  deletePost(context);
+                                  Navigator.pop(context);
+                                },
+                                icon: const Icon(
+                                  Icons.delete,
+                                  color: Color.fromARGB(255, 255, 255, 255),
+                                ),
+                              ),
+                          ],
                         ),
                       ],
                     ),
@@ -67,17 +96,32 @@ class _PostViewState extends State<PostView> {
                 ),
               ],
             ),
-
-            // Event details
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    widget.post.title,
-                    style: const TextStyle(
-                        fontSize: 35, fontWeight: FontWeight.bold),
+                  Row(
+                    children: [
+                      Text(
+                        widget.post.title,
+                        style: const TextStyle(
+                            fontSize: 35, fontWeight: FontWeight.bold),
+                      ),
+                      Spacer(),
+                      // Icon on the right
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context, CommentsScreen.route(widget.post.id));
+                        },
+                        child: const Icon(
+                          Icons.comment, // Replace with your desired icon
+                          size: 24,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 8),
                   Row(
@@ -97,11 +141,9 @@ class _PostViewState extends State<PostView> {
                     ],
                   ),
                   const SizedBox(height: 16),
-
                   const Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Date
                       Row(
                         children: [
                           Icon(
@@ -118,9 +160,7 @@ class _PostViewState extends State<PostView> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 12), // Spacing between rows
-
-                      // Time
+                      SizedBox(height: 12),
                       Row(
                         children: [
                           Icon(
@@ -137,9 +177,7 @@ class _PostViewState extends State<PostView> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 12), // Spacing between rows
-
-                      // Location
+                      SizedBox(height: 12),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -161,17 +199,12 @@ class _PostViewState extends State<PostView> {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 16),
-
-                  // About Event
                   const Text(
                     'About Event',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
-
-                  // Description with "View More" Button
                   Text(
                     showFullDescription
                         ? widget.post.description ?? ""
@@ -194,10 +227,7 @@ class _PostViewState extends State<PostView> {
                         ),
                       ),
                     ),
-
                   const SizedBox(height: 16),
-
-                  // Attending Button
                   Center(
                     child: ElevatedButton.icon(
                       onPressed: () {},
