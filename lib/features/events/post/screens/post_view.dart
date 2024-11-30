@@ -4,6 +4,7 @@ import 'package:kyn_2/features/auth/controller/auth_controller.dart';
 import 'package:kyn_2/features/events/post/controller/post_controller.dart';
 import 'package:kyn_2/features/events/post/screens/comments_screen.dart';
 import 'package:kyn_2/models/post_model.dart';
+import 'package:kyn_2/core/constants/constants.dart'; // Ensure Constants is imported
 
 class PostView extends ConsumerStatefulWidget {
   final Post post;
@@ -34,6 +35,12 @@ class _PostViewState extends ConsumerState<PostView> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider);
+
+    // Get the default image URL based on the post's category
+    final imageUrl = widget.post.link?.isNotEmpty == true
+        ? widget.post.link
+        : Constants().getDefaultImageForCategory(widget.post.category);
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -41,19 +48,13 @@ class _PostViewState extends ConsumerState<PostView> {
           children: [
             Stack(
               children: [
-                widget.post.link != null && widget.post.link!.isNotEmpty
-                    ? Image.network(
-                        widget.post.link!,
-                        height: 250,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                      )
-                    : Image.asset(
-                        "assets/images/logo.jpg",
-                        height: 250,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                      ),
+                // Use the dynamic image URL
+                Image.network(
+                  imageUrl!,
+                  height: 250,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
                 Container(
                   height: 250,
                   color: Colors.black.withOpacity(0.5),
@@ -76,8 +77,7 @@ class _PostViewState extends ConsumerState<PostView> {
                                   const Icon(Icons.share, color: Colors.white),
                               onPressed: () {},
                             ),
-                            if (widget.post.uid ==
-                                user?.uid) // Ensure user is available
+                            if (widget.post.uid == user?.uid)
                               IconButton(
                                 onPressed: () {
                                   deletePost(context);
@@ -85,7 +85,7 @@ class _PostViewState extends ConsumerState<PostView> {
                                 },
                                 icon: const Icon(
                                   Icons.delete,
-                                  color: Color.fromARGB(255, 255, 255, 255),
+                                  color: Colors.white,
                                 ),
                               ),
                           ],
@@ -109,14 +109,13 @@ class _PostViewState extends ConsumerState<PostView> {
                             fontSize: 35, fontWeight: FontWeight.bold),
                       ),
                       Spacer(),
-                      // Icon on the right
                       GestureDetector(
                         onTap: () {
                           Navigator.push(
                               context, CommentsScreen.route(widget.post.id));
                         },
                         child: const Icon(
-                          Icons.comment, // Replace with your desired icon
+                          Icons.comment,
                           size: 24,
                           color: Colors.grey,
                         ),
