@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kyn_2/core/theme/pallete.dart';
+import 'package:kyn_2/core/theme/theme.dart';
 import 'package:kyn_2/features/auth/controller/auth_controller.dart';
 import 'package:kyn_2/features/events/community/controller/community_controller.dart';
-import 'package:kyn_2/features/events/post/widget/post_card.dart';
 import 'package:kyn_2/features/events/post/widget/post_card_2.dart';
 import 'package:kyn_2/features/events/post/widget/post_card_3.dart';
 import 'package:kyn_2/features/events/post/widget/post_card_4.dart';
@@ -102,7 +103,7 @@ class HomePage extends ConsumerWidget {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 20),
+                      padding: const EdgeInsets.only(bottom: 10),
                       child: SizedBox(
                         height: 230,
                         child: ref.watch(getAllEventsonly).when(
@@ -125,10 +126,7 @@ class HomePage extends ConsumerWidget {
                                       return const SizedBox.shrink();
                                     }
 
-                                    return Padding(
-                                      padding: const EdgeInsets.only(right: 12),
-                                      child: PostCard2(post: post),
-                                    );
+                                    return PostCard2(post: post);
                                   },
                                 );
                               },
@@ -151,7 +149,7 @@ class HomePage extends ConsumerWidget {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 20),
+                      padding: const EdgeInsets.only(bottom: 10),
                       child: SizedBox(
                         height: 230,
                         child: ref.watch(getAllServicesonly).when(
@@ -200,7 +198,7 @@ class HomePage extends ConsumerWidget {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 20),
+                      padding: const EdgeInsets.only(bottom: 10),
                       child: SizedBox(
                         height: 300,
                         child: ref.watch(getAllBusinessonly).when(

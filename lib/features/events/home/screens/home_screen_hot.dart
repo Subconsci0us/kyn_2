@@ -14,7 +14,7 @@ class WhatshotHomeScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Posts',
+          'Search Posts',
           style: GoogleFonts.roboto(
             textStyle: const TextStyle(
               fontSize: 22,
@@ -23,19 +23,21 @@ class WhatshotHomeScreen extends ConsumerWidget {
           ),
         ),
         centerTitle: true,
+        actions: [
+          // Plus icon button on the right side of the app bar
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              // Navigate to AddPostTypeScreen when tapped
+              Navigator.of(context).push(
+                AddPostTypeScreen.route(),
+              );
+            },
+          ),
+        ],
       ),
-      body: const FeedScreen(),
-      // Floating Action Button
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context).push(
-            AddPostTypeScreen.route(), // Navigates to AddPostTypeScreen
-          );
-        },
-        backgroundColor:
-            const Color.fromARGB(255, 73, 73, 73), // FAB background color
-        child: const Icon(Icons.add, color: Colors.white), // Plus icon
-      ),
+      body: FeedScreen(),
+      // Floating Action Button (optional, if you want another button in the body)
     );
   }
 }

@@ -34,6 +34,13 @@ class _AddPostTypeScreenState extends ConsumerState<AddPostTypeScreen> {
   String selectedTime = "Today";
   DateTime selectedDate = DateTime.now();
 
+  Map<String, String> categoryToBanner = {
+    'Emergency': 'assets/images/emergency.jpg',
+    'Service': 'assets/images/service.jpg',
+    'Event': 'assets/images/events.jpg',
+    'Business': 'assets/images/business.jpg',
+  };
+
   @override
   void dispose() {
     super.dispose();
@@ -78,6 +85,7 @@ class _AddPostTypeScreenState extends ConsumerState<AddPostTypeScreen> {
       return;
     }
 
+    // Proceed with sharing the post
     ref.read(postControllerProvider.notifier).sharePost(
           context: context,
           title: title,

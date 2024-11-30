@@ -27,6 +27,9 @@ class PostCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    String imageUrl =
+        post.link ?? Constants().getDefaultImageForCategory(post.category);
+
     final user = ref.watch(userProvider);
 
     return SizedBox(
@@ -52,7 +55,7 @@ class PostCard extends ConsumerWidget {
                       top: Radius.circular(15),
                     ),
                     child: CachedNetworkImage(
-                      imageUrl: post.link ?? Constants.emergencyDefault,
+                      imageUrl: imageUrl,
                       height: 180,
                       width: double.infinity,
                       fit: BoxFit.cover,

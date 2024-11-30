@@ -14,6 +14,9 @@ class PostCard4 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String imageUrl =
+        post.link ?? Constants().getDefaultImageForCategory(post.category);
+
     return GestureDetector(
       onTap: () {
         // Navigate to PostView with the selected post
@@ -22,6 +25,8 @@ class PostCard4 extends StatelessWidget {
       child: SizedBox(
         height: 260,
         child: Card(
+          color: const Color(0xFFF7F7F7),
+
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -31,7 +36,7 @@ class PostCard4 extends StatelessWidget {
             children: [
               // Background Image
               CachedNetworkImage(
-                imageUrl: post.link ?? Constants.emergencyDefault,
+                imageUrl: imageUrl,
                 height: double.infinity,
                 width: double.infinity,
                 fit: BoxFit.cover,

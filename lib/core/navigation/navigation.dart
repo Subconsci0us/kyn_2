@@ -4,7 +4,7 @@ import 'package:kyn_2/features/auth/controller/auth_controller.dart';
 import 'package:kyn_2/core/theme/theme.dart';
 import 'package:kyn_2/features/explore/explore_screen.dart';
 import 'package:kyn_2/features/maps/map_screen.dart';
-import 'package:kyn_2/features/settings/screens/settings_screen.dart';
+import 'package:kyn_2/features/settings/screens/settings.dart';
 import 'package:kyn_2/features/events/home/screens/home_screen_hot.dart';
 
 class Navigation extends ConsumerStatefulWidget {
@@ -69,11 +69,11 @@ class _NavigationState extends ConsumerState<Navigation> {
       ),
       body: IndexedStack(
         index: currentPageIndex,
-        children: const [
+        children: [
           HomePage(),
           WhatshotHomeScreen(),
           MapScreen(),
-          SettingsPage(),
+          Settings(),
         ],
       ),
     );

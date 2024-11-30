@@ -3,11 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kyn_2/core/theme/theme.dart';
 
 // Settings screen with theme toggle
-class SettingsScreen extends ConsumerWidget {
-  const SettingsScreen({super.key});
+class AppSettingsScreen extends ConsumerWidget {
+  const AppSettingsScreen({super.key});
 
   static route() => MaterialPageRoute(
-        builder: (context) => const SettingsScreen(),
+        builder: (context) => const AppSettingsScreen(),
       );
   @override
   Widget build(BuildContext context, WidgetRef ref) {

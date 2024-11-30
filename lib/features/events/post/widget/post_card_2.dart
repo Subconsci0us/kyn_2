@@ -15,6 +15,10 @@ class PostCard2 extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Get the default image based on category
+    String imageUrl =
+        post.link ?? Constants().getDefaultImageForCategory(post.category);
+
     return GestureDetector(
       onTap: () {
         Navigator.push(context, PostView.route(post));
@@ -23,6 +27,7 @@ class PostCard2 extends ConsumerWidget {
         height: 220, // Set the card height
         width: 270, // Set the card width
         child: Card(
+          color: const Color(0xFFF7F7F7),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -37,7 +42,7 @@ class PostCard2 extends ConsumerWidget {
                   top: Radius.circular(16),
                 ),
                 child: CachedNetworkImage(
-                  imageUrl: post.link ?? Constants.emergencyDefault,
+                  imageUrl: imageUrl,
                   height: 140, // Adjust the image height to fit the card size
                   width: double.infinity,
                   fit: BoxFit.cover,
