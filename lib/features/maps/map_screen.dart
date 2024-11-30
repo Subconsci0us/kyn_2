@@ -24,17 +24,61 @@ class _MapScreenState extends State<MapScreen> {
   final Set<Marker> _displayedMarkers = {};
   Post? _selectedPost; // To store the currently selected post
 
+  BitmapDescriptor? emergencyIcon;
+  BitmapDescriptor? eventIcon;
+  BitmapDescriptor? businessIcon;
+  BitmapDescriptor? servicesIcon;
+
   @override
   void initState() {
     super.initState();
+    _loadCustomMarkers(); // Load the custom markers
     _initializeMap();
   }
 
+  // Load custom marker icons for each category
+  Future<void> _loadCustomMarkers() async {
+    emergencyIcon = await BitmapDescriptor.asset(
+      const ImageConfiguration(
+        devicePixelRatio: 2.5,
+      ),
+      'assets/images/emergency.png',
+    );
+    eventIcon = await BitmapDescriptor.asset(
+      const ImageConfiguration(devicePixelRatio: 2.5),
+      'assets/images/event.png',
+    );
+    businessIcon = await BitmapDescriptor.asset(
+      const ImageConfiguration(devicePixelRatio: 2.5),
+      'assets/images/business.png',
+    );
+    servicesIcon = await BitmapDescriptor.asset(
+      const ImageConfiguration(devicePixelRatio: 2.5),
+      'assets/images/service.png',
+    );
+  }
+
+  // Get the correct marker icon based on the post category
+  BitmapDescriptor _getCategoryIcon(Category category) {
+    switch (category) {
+      case Category.Emergency:
+        return emergencyIcon!;
+      case Category.Event:
+        return eventIcon!;
+      case Category.Business:
+        return businessIcon!;
+      case Category.Services:
+        return servicesIcon!;
+    }
+  }
+
+  // Initialize the map and get the current location
   Future<void> _initializeMap() async {
     await _loadMarkers();
     await _getCurrentLocation();
   }
 
+  // Get the current location of the user
   Future<void> _getCurrentLocation() async {
     try {
       final pos = await _location.getLocation();
@@ -55,6 +99,7 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
+  // Filter markers by radius
   void _filterMarkersByRadius() {
     setState(() {
       _displayedMarkers.clear();
@@ -65,6 +110,7 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
+  // Calculate distance between two points
   double _calculateDistance(LatLng point1, LatLng point2) {
     const earthRadius = 6371.0;
     final lat1 = point1.latitude * (math.pi / 180);
@@ -84,6 +130,7 @@ class _MapScreenState extends State<MapScreen> {
     return earthRadius * c;
   }
 
+  // Load markers from Firestore
   Future<void> _loadMarkers() async {
     try {
       final snapshot =
@@ -92,11 +139,8 @@ class _MapScreenState extends State<MapScreen> {
       for (var doc in snapshot.docs) {
         final geoPoint = doc.data()['position']['geopoint'] as GeoPoint;
         final position = LatLng(geoPoint.latitude, geoPoint.longitude);
-        final title = doc.data()['title'] ?? 'Unknown';
-
-        // Assuming you have a Post model
         final post = Post.fromMap(doc.data());
-        _addMarker(position, title, post);
+        _addMarker(position, post.title, post);
       }
 
       _filterMarkersByRadius();
@@ -105,14 +149,18 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
+  // Add a marker to the map
   void _addMarker(LatLng position, String title, Post post) {
+    final markerIcon = _getCategoryIcon(post.category);
+
     final marker = Marker(
       markerId: MarkerId(UniqueKey().toString()),
       position: position,
+      icon: markerIcon,
       infoWindow: InfoWindow(title: title),
       onTap: () {
         setState(() {
-          _selectedPost = post; // Set the selected post
+          _selectedPost = post;
         });
       },
     );
@@ -145,9 +193,9 @@ class _MapScreenState extends State<MapScreen> {
               )
             },
             onTap: (LatLng position) {
-              // Deselect the post card when the map is tapped
               setState(() {
-                _selectedPost = null;
+                _selectedPost =
+                    null; // Deselect the post card when the map is tapped
               });
             },
           ),

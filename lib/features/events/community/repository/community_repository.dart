@@ -32,7 +32,7 @@ class CommunityRepository {
           (snapshot) => snapshot.docs
               .map(
                 (doc) => Post.fromMap(
-                  doc.data() as Map<String, dynamic>,
+                  doc.data(),
                 ),
               )
               .toList(),
@@ -48,7 +48,7 @@ class CommunityRepository {
           (snapshot) => snapshot.docs
               .map(
                 (doc) => Post.fromMap(
-                  doc.data() as Map<String, dynamic>,
+                  doc.data(),
                 ),
               )
               .toList(),
@@ -64,7 +64,7 @@ class CommunityRepository {
           (snapshot) => snapshot.docs
               .map(
                 (doc) => Post.fromMap(
-                  doc.data() as Map<String, dynamic>,
+                  doc.data(),
                 ),
               )
               .toList(),
@@ -80,7 +80,7 @@ class CommunityRepository {
           (snapshot) => snapshot.docs
               .map(
                 (doc) => Post.fromMap(
-                  doc.data() as Map<String, dynamic>,
+                  doc.data(),
                 ),
               )
               .toList(),
@@ -96,7 +96,7 @@ class CommunityRepository {
           (event) => event.docs
               .map(
                 (e) => Post.fromMap(
-                  e.data() as Map<String, dynamic>,
+                  e.data(),
                 ),
               )
               .toList(),
@@ -112,7 +112,7 @@ class CommunityRepository {
           (event) => event.docs
               .map(
                 (e) => Post.fromMap(
-                  e.data() as Map<String, dynamic>,
+                  e.data(),
                 ),
               )
               .toList(),
@@ -180,7 +180,7 @@ class CommunityRepository {
         .map((snapshot) {
       // Convert Firestore snapshot into a list of Post objects
       return snapshot.docs.map((doc) {
-        return Post.fromMap(doc.data() as Map<String, dynamic>);
+        return Post.fromMap(doc.data());
       }).toList();
     });
   }

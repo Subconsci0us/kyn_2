@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:kyn_2/core/theme/pallete.dart';
-import 'package:kyn_2/core/theme/theme.dart';
+
 import 'package:kyn_2/features/auth/controller/auth_controller.dart';
 import 'package:kyn_2/features/events/community/controller/community_controller.dart';
 import 'package:kyn_2/features/events/post/widget/post_card_2.dart';

@@ -70,9 +70,9 @@ class _NavigationState extends ConsumerState<Navigation> {
       body: IndexedStack(
         index: currentPageIndex,
         children: [
-          HomePage(),
-          WhatshotHomeScreen(),
-          MapScreen(),
+          const HomePage(),
+          const WhatshotHomeScreen(),
+          const MapScreen(),
           Settings(),
         ],
       ),

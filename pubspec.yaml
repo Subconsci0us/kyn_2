@@ -91,6 +91,10 @@ flutter:
       - assets/images/background.jpg
       - assets/images/map.png
       - assets/images/invite.png
+      - assets/images/emergency.png
+      - assets/images/event.png
+      - assets/images/service.png
+      - assets/images/business.png
       
 
   # An image asset can refer to one or more resolution-specific "variants", see
