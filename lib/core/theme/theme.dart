@@ -8,91 +8,105 @@ final themeNotifierProvider =
 });
 
 class Palette {
-  // Colors
-  static const Color blackColor = Color.fromRGBO(1, 1, 1, 1); // Primary color
-  static Color greyColor = Colors.grey.shade100; // Secondary color
-  static const Color drawerColor = Color.fromRGBO(18, 18, 18, 1);
-  static const Color whiteColor = Colors.white;
-  static final Color redColor = Colors.red.shade500;
-  static final Color blueColor = Colors.blue.shade300;
+  // Colors inspired by the design
+  static const Color lightBackground = Color(0xFFF7F7F7);
+  static const Color darkBackground = Color(0xFF121212);
+  static const Color lightCardColor = Color(0xFFFFFFFF);
+  static const Color darkCardColor = Color(0xFF1E1E1E);
+  static const Color primaryAccentLight = Color(0xFF3366FF);
+  static const Color primaryAccentDark = Color(0xFF4DB6AC);
+  static const Color lightText = Color(0xFF333333);
+  static const Color darkText = Color(0xFFE0E0E0);
 
-  // Dark mode theme
-  static final ThemeData darkModeAppTheme = ThemeData.dark().copyWith(
-    scaffoldBackgroundColor: blackColor,
-    cardColor: greyColor,
-    appBarTheme: const AppBarTheme(
-      backgroundColor: drawerColor,
-      iconTheme: IconThemeData(color: whiteColor),
-    ),
-    drawerTheme: const DrawerThemeData(
-      backgroundColor: drawerColor,
-    ),
-    chipTheme: const ChipThemeData(
-      backgroundColor: blackColor,
-      side: BorderSide.none,
-    ),
-    inputDecorationTheme: InputDecorationTheme(
-      contentPadding: const EdgeInsets.all(27),
-      border: _border(),
-      enabledBorder: _border(),
-      focusedBorder: _border(redColor),
-      errorBorder: _border(redColor),
-    ),
-    primaryColor: redColor,
-    indicatorColor: blackColor,
-    textTheme: const TextTheme(
-      headlineLarge: TextStyle(
-          color: whiteColor, fontSize: 32, fontWeight: FontWeight.bold),
-      headlineMedium: TextStyle(
-          color: whiteColor, fontSize: 20, fontWeight: FontWeight.bold),
-      headlineSmall: TextStyle(
-          color: whiteColor, fontSize: 16, fontWeight: FontWeight.bold),
-      bodyLarge: TextStyle(color: whiteColor, fontSize: 14),
-      bodyMedium: TextStyle(color: whiteColor, fontSize: 12),
-    ),
+  // Jakarta font-based TextTheme
+  static const String fontFamilyJakarta = 'jakarta';
+
+  static TextTheme jakartaTextTheme = const TextTheme(
+    headlineLarge: TextStyle(
+        fontFamily: fontFamilyJakarta,
+        color: lightText,
+        fontSize: 32,
+        fontWeight: FontWeight.bold),
+    headlineMedium: TextStyle(
+        fontFamily: fontFamilyJakarta,
+        color: lightText,
+        fontSize: 20,
+        fontWeight: FontWeight.bold),
+    headlineSmall: TextStyle(
+        fontFamily: fontFamilyJakarta,
+        color: lightText,
+        fontSize: 16,
+        fontWeight: FontWeight.bold),
+    bodyLarge: TextStyle(
+        fontFamily: fontFamilyJakarta, color: lightText, fontSize: 14),
+    bodyMedium: TextStyle(
+        fontFamily: fontFamilyJakarta, color: lightText, fontSize: 12),
   );
 
   // Light mode theme
   static final ThemeData lightModeAppTheme = ThemeData.light().copyWith(
-    scaffoldBackgroundColor: greyColor,
-    cardColor: whiteColor,
+    scaffoldBackgroundColor: lightBackground,
+    cardColor: lightBackground,
     appBarTheme: const AppBarTheme(
-      backgroundColor: whiteColor,
+      backgroundColor: lightBackground,
       elevation: 0,
-      iconTheme: IconThemeData(color: blackColor),
+      iconTheme: IconThemeData(color: lightText),
     ),
     drawerTheme: const DrawerThemeData(
-      backgroundColor: whiteColor,
+      backgroundColor: lightCardColor,
     ),
     chipTheme: const ChipThemeData(
-      backgroundColor: whiteColor,
+      backgroundColor: lightCardColor,
       side: BorderSide.none,
     ),
     inputDecorationTheme: InputDecorationTheme(
-      contentPadding: const EdgeInsets.all(27),
+      contentPadding: const EdgeInsets.all(20),
       border: _border(),
       enabledBorder: _border(),
-      focusedBorder: _border(blueColor),
-      errorBorder: _border(redColor),
+      focusedBorder: _border(primaryAccentLight),
+      errorBorder: _border(Colors.red),
     ),
-    primaryColor: redColor,
-    indicatorColor: whiteColor,
-    textTheme: const TextTheme(
-      headlineLarge: TextStyle(
-          color: blackColor, fontSize: 32, fontWeight: FontWeight.bold),
-      headlineMedium: TextStyle(
-          color: blackColor, fontSize: 20, fontWeight: FontWeight.bold),
-      headlineSmall: TextStyle(
-          color: blackColor, fontSize: 16, fontWeight: FontWeight.bold),
-      bodyLarge: TextStyle(color: blackColor, fontSize: 14),
-      bodyMedium: TextStyle(color: blackColor, fontSize: 12),
+    primaryColor: primaryAccentLight,
+    indicatorColor: lightBackground,
+    textTheme: jakartaTextTheme.copyWith(
+      headlineLarge: jakartaTextTheme.headlineLarge?.copyWith(color: lightText),
+    ),
+  );
+
+  // Dark mode theme
+  static final ThemeData darkModeAppTheme = ThemeData.dark().copyWith(
+    scaffoldBackgroundColor: darkBackground,
+    cardColor: darkCardColor,
+    appBarTheme: const AppBarTheme(
+      backgroundColor: darkBackground,
+      elevation: 0,
+      iconTheme: IconThemeData(color: darkText),
+    ),
+    drawerTheme: const DrawerThemeData(
+      backgroundColor: darkCardColor,
+    ),
+    chipTheme: const ChipThemeData(
+      backgroundColor: darkCardColor,
+      side: BorderSide.none,
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      contentPadding: const EdgeInsets.all(20),
+      border: _border(),
+      enabledBorder: _border(),
+      focusedBorder: _border(primaryAccentDark),
+      errorBorder: _border(Colors.red),
+    ),
+    primaryColor: primaryAccentDark,
+    indicatorColor: primaryAccentDark,
+    textTheme: jakartaTextTheme.copyWith(
+      headlineLarge: jakartaTextTheme.headlineLarge?.copyWith(color: darkText),
     ),
   );
 
   static OutlineInputBorder _border([Color color = Colors.grey]) {
     return OutlineInputBorder(
       borderSide: BorderSide(color: color),
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(12),
     );
   }
 }
@@ -101,9 +115,7 @@ class ThemeNotifier extends StateNotifier<ThemeData> {
   ThemeMode _mode;
   ThemeNotifier({ThemeMode mode = ThemeMode.light})
       : _mode = mode,
-        super(
-          Palette.darkModeAppTheme,
-        ) {
+        super(Palette.lightModeAppTheme) {
     getTheme();
   }
 

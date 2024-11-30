@@ -23,6 +23,70 @@ class CommunityRepository {
   CollectionReference get _posts =>
       _firestore.collection(FirebaseConstants.postsCollection);
 
+  Stream<List<Post>> getAllEventsonly() {
+    return FirebaseFirestore.instance
+        .collection("posts")
+        .where("category", isEqualTo: "Event") // Filter by category "Event"
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+              .map(
+                (doc) => Post.fromMap(
+                  doc.data() as Map<String, dynamic>,
+                ),
+              )
+              .toList(),
+        );
+  }
+
+  Stream<List<Post>> getAllServicesonly() {
+    return FirebaseFirestore.instance
+        .collection("posts")
+        .where("category", isEqualTo: "Services") // Filter by category "Event"
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+              .map(
+                (doc) => Post.fromMap(
+                  doc.data() as Map<String, dynamic>,
+                ),
+              )
+              .toList(),
+        );
+  }
+
+  Stream<List<Post>> getAllBusinessonly() {
+    return FirebaseFirestore.instance
+        .collection("posts")
+        .where("category", isEqualTo: "Business") // Filter by category "Event"
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+              .map(
+                (doc) => Post.fromMap(
+                  doc.data() as Map<String, dynamic>,
+                ),
+              )
+              .toList(),
+        );
+  }
+
+  Stream<List<Post>> getAllEmergencyonly() {
+    return FirebaseFirestore.instance
+        .collection("posts")
+        .where("category", isEqualTo: "Emergency") // Filter by category "Event"
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+              .map(
+                (doc) => Post.fromMap(
+                  doc.data() as Map<String, dynamic>,
+                ),
+              )
+              .toList(),
+        );
+  }
+
   Stream<List<Post>> getAllPosts() {
     return FirebaseFirestore.instance
         .collection("posts")

@@ -17,6 +17,26 @@ final getAllPosts = StreamProvider((ref) {
   return communityController.getAllPosts();
 });
 
+final getAllEventsonly = StreamProvider((ref) {
+  final communityController = ref.watch(communityControllerProvider.notifier);
+  return communityController.getAllEventsonly();
+});
+
+final getAllEmergencyonly = StreamProvider((ref) {
+  final communityController = ref.watch(communityControllerProvider.notifier);
+  return communityController.getAllEmergencyonly();
+});
+
+final getAllBusinessonly = StreamProvider((ref) {
+  final communityController = ref.watch(communityControllerProvider.notifier);
+  return communityController.getAllBusinessonly();
+});
+
+final getAllServicesonly = StreamProvider((ref) {
+  final communityController = ref.watch(communityControllerProvider.notifier);
+  return communityController.getAllServicesonly();
+});
+
 final getAllPostsByUser = StreamProvider.family((ref, String uid) {
   final communityController = ref.watch(communityControllerProvider.notifier);
   return communityController.getAllPostsByUser(uid);
@@ -61,6 +81,22 @@ class CommunityController extends StateNotifier<bool> {
         _ref = ref,
         _storageRepository = storageRepository,
         super(false);
+
+  Stream<List<Post>> getAllEventsonly() {
+    return _communityRepository.getAllEventsonly();
+  }
+
+  Stream<List<Post>> getAllServicesonly() {
+    return _communityRepository.getAllServicesonly();
+  }
+
+  Stream<List<Post>> getAllEmergencyonly() {
+    return _communityRepository.getAllEmergencyonly();
+  }
+
+  Stream<List<Post>> getAllBusinessonly() {
+    return _communityRepository.getAllBusinessonly();
+  }
 
   Stream<List<Post>> getAllPosts() {
     return _communityRepository.getAllPosts();

@@ -22,7 +22,7 @@ class _NavigationState extends ConsumerState<Navigation> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = ref.watch(themeNotifierProvider);
+    final theme = ref.watch(themeNotifierProvider); // Watching the theme
     final user = ref.watch(userProvider);
 
     if (user == null) {
@@ -40,7 +40,9 @@ class _NavigationState extends ConsumerState<Navigation> {
             currentPageIndex = index;
           });
         },
-        indicatorColor: theme.indicatorColor,
+        indicatorColor: theme.indicatorColor, // Sets the indicator color
+        backgroundColor:
+            theme.scaffoldBackgroundColor, // Custom background color
         selectedIndex: currentPageIndex,
         destinations: const <Widget>[
           NavigationDestination(
@@ -67,11 +69,11 @@ class _NavigationState extends ConsumerState<Navigation> {
       ),
       body: IndexedStack(
         index: currentPageIndex,
-        children: [
-          const HomePage(),
-          const WhatshotHomeScreen(),
-          const MapScreen(),
-          const SettingsPage(),
+        children: const [
+          HomePage(),
+          WhatshotHomeScreen(),
+          MapScreen(),
+          SettingsPage(),
         ],
       ),
     );

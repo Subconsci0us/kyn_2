@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kyn_2/features/auth/controller/auth_controller.dart';
 import 'package:kyn_2/features/events/community/controller/community_controller.dart';
 import 'package:kyn_2/features/events/post/widget/post_card.dart';
+import 'package:kyn_2/features/events/post/widget/post_card_2.dart';
+import 'package:kyn_2/features/events/post/widget/post_card_3.dart';
+import 'package:kyn_2/features/events/post/widget/post_card_4.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
@@ -12,312 +15,233 @@ class HomePage extends ConsumerWidget {
     final user = ref.watch(userProvider);
 
     return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: const Text("Explore",
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_active, size: 28),
+            onPressed: () {
+              // Add your notification action here
+            },
+          ),
+        ],
+      ),
       body: Stack(
         children: [
-          // Background Image
-          Positioned.fill(
-            child: Image.asset(
-              'assets/images/background.jpg', // Add your background image here
-              fit: BoxFit.cover,
-            ),
-          ),
-          // Content
           SafeArea(
             child: SingleChildScrollView(
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // App Bar
-                    AppBar(
-                      backgroundColor: Colors.transparent,
-                      elevation: 0,
-                      centerTitle: true, // Ensures the title is centered
-                      title: RichText(
-                        text: const TextSpan(
-                          text: 'Know ',
-                          style: TextStyle(
-                            fontSize: 25,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.purple,
-                          ),
-                          children: <TextSpan>[
-                            TextSpan(
-                              text: 'your ',
-                              style: TextStyle(
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.pink,
-                              ),
-                            ),
-                            TextSpan(
-                              text: 'neighbour',
-                              style: TextStyle(
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.red,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      actions: [
-                        IconButton(
-                          icon: const Icon(Icons.notifications_active),
-                          onPressed: () {
-                            // Add your notification action here
-                          },
-                        ),
-                      ],
-                    ),
+
                     // Welcome Text
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       child: Text(
-                        'Welcome ${user?.name ?? 'User'} ,',
+                        'Welcome ${user?.name ?? 'User'},',
                         style: const TextStyle(
                           fontSize: 30,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                    // Category Pills
-                    SizedBox(
-                      height: 40,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: [
-                          CategoryPill(
-                            icon: Icons.sports,
-                            label: 'Sports',
-                            color: Colors.red[100]!,
-                          ),
-                          CategoryPill(
-                            icon: Icons.music_note,
-                            label: 'Music',
-                            color: Colors.orange[100]!,
-                          ),
-                          CategoryPill(
-                            icon: Icons.fastfood,
-                            label: 'Food',
-                            color: Colors.green[100]!,
-                          ),
-                          CategoryPill(
-                            icon: Icons.sports,
-                            label: 'Sports',
-                            color: Colors.red[100]!,
-                          ),
-                          CategoryPill(
-                            icon: Icons.music_note,
-                            label: 'Music',
-                            color: Colors.orange[100]!,
-                          ),
-                          CategoryPill(
-                            icon: Icons.fastfood,
-                            label: 'Food',
-                            color: Colors.green[100]!,
-                          ),
-                        ],
+                    // Event Cards Section
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: SizedBox(
+                        height: 270,
+                        child: ref.watch(getAllEmergencyonly).when(
+                              data: (posts) {
+                                if (posts.isEmpty) {
+                                  return const Center(
+                                      child: Text('No posts available',
+                                          style: TextStyle(fontSize: 18)));
+                                }
+
+                                final latestPosts = posts.take(5).toList();
+
+                                return ListView.builder(
+                                  itemCount: latestPosts.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    final post = latestPosts[index];
+
+                                    if (post == null) {
+                                      return const SizedBox.shrink();
+                                    }
+
+                                    return Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 12),
+                                      child: PostCard4(post: post),
+                                    );
+                                  },
+                                );
+                              },
+                              loading: () => const Center(
+                                  child: CircularProgressIndicator()),
+                              error: (error, stackTrace) =>
+                                  Center(child: Text('Error: $error')),
+                            ),
                       ),
                     ),
                     // Upcoming Events Section
                     const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'My Posts',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
+                      padding: EdgeInsets.symmetric(vertical: 0),
+                      child: Text(
+                        'Upcoming Events',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                    // Event Cards
-                    SizedBox(
-                      height: 270,
-                      child: ref.watch(getAllPostsByUser(user!.uid)).when(
-                            data: (posts) {
-                              if (posts.isEmpty) {
-                                return const Center(
-                                    child: Text('No posts available'));
-                              }
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 20),
+                      child: SizedBox(
+                        height: 230,
+                        child: ref.watch(getAllEventsonly).when(
+                              data: (posts) {
+                                if (posts.isEmpty) {
+                                  return const Center(
+                                      child: Text('No posts available'));
+                                }
 
-                              final latestPosts = posts.take(5).toList();
+                                final latestPosts = posts.take(5).toList();
 
-                              return ListView.builder(
-                                scrollDirection: Axis
-                                    .horizontal, // Enable horizontal scrolling
-                                itemCount: latestPosts.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  final post = latestPosts[index];
+                                return ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: latestPosts.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    final post = latestPosts[index];
 
-                                  if (post == null) {
-                                    return const SizedBox.shrink();
-                                  }
+                                    if (post == null) {
+                                      return const SizedBox.shrink();
+                                    }
 
-                                  return Container(
-                                    width: 350,
-                                    child: PostCard(post: post),
-                                  );
-                                },
-                              );
-                            },
-                            loading: () => const Center(
-                                child: CircularProgressIndicator()),
-                            error: (error, stackTrace) => Center(
-                              child: Text('Error: $error'),
+                                    return Padding(
+                                      padding: const EdgeInsets.only(right: 12),
+                                      child: PostCard2(post: post),
+                                    );
+                                  },
+                                );
+                              },
+                              loading: () => const Center(
+                                  child: CircularProgressIndicator()),
+                              error: (error, stackTrace) =>
+                                  Center(child: Text('Error: $error')),
                             ),
-                          ),
-                    ),
-                    // Invite Friends Section
-                    Container(
-                      margin: const EdgeInsets.symmetric(vertical: 16),
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: const Color.fromARGB(88, 227, 242, 253),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  'Invite your friends',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  'Get \$20 for ticket',
-                                  style: TextStyle(
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                                ElevatedButton(
-                                  onPressed: () {},
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.blue,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                  child: const Text(
-                                    'INVITE',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Image.asset(
-                            'assets/images/invite.png',
-                            height: 100,
-                            width: 180,
-                            fit: BoxFit.fill,
-                          ),
-                        ],
                       ),
                     ),
-                    // Upcoming Events Section
+                    // Upcoming Services Section
                     const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Upcoming Events',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
+                      padding: EdgeInsets.symmetric(vertical: 0),
+                      child: Text(
+                        'Services',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                    // Event Cards
-                    SizedBox(
-                      height: 270,
-                      child: ref.watch(getAllPosts).when(
-                            data: (posts) {
-                              if (posts.isEmpty) {
-                                return const Center(
-                                    child: Text('No posts available'));
-                              }
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 20),
+                      child: SizedBox(
+                        height: 230,
+                        child: ref.watch(getAllServicesonly).when(
+                              data: (posts) {
+                                if (posts.isEmpty) {
+                                  return const Center(
+                                      child: Text('No posts available'));
+                                }
 
-                              final latestPosts = posts.take(5).toList();
+                                final latestPosts = posts.take(5).toList();
 
-                              return ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                itemCount: latestPosts.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  final post = latestPosts[index];
+                                return ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: latestPosts.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    final post = latestPosts[index];
 
-                                  if (post == null) {
-                                    return const SizedBox.shrink();
-                                  }
+                                    if (post == null) {
+                                      return const SizedBox.shrink();
+                                    }
 
-                                  return Container(
-                                    width: 350,
-                                    child: PostCard(post: post),
-                                  );
-                                },
-                              );
-                            },
-                            loading: () => const Center(
-                                child: CircularProgressIndicator()),
-                            error: (error, stackTrace) => Center(
-                              child: Text('Error: $error'),
+                                    return Padding(
+                                      padding: const EdgeInsets.only(right: 12),
+                                      child: PostCard2(post: post),
+                                    );
+                                  },
+                                );
+                              },
+                              loading: () => const Center(
+                                  child: CircularProgressIndicator()),
+                              error: (error, stackTrace) =>
+                                  Center(child: Text('Error: $error')),
                             ),
-                          ),
+                      ),
+                    ),
+                    // Upcoming Businesses Section
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 0),
+                      child: Text(
+                        'Business',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 20),
+                      child: SizedBox(
+                        height: 300,
+                        child: ref.watch(getAllBusinessonly).when(
+                              data: (posts) {
+                                if (posts.isEmpty) {
+                                  return const Center(
+                                      child: Text('No posts available'));
+                                }
+
+                                final latestPosts = posts.take(5).toList();
+
+                                return ListView.builder(
+                                  scrollDirection: Axis.vertical,
+                                  itemCount: latestPosts.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    final post = latestPosts[index];
+
+                                    if (post == null) {
+                                      return const SizedBox.shrink();
+                                    }
+
+                                    return Padding(
+                                      padding: const EdgeInsets.only(right: 12),
+                                      child: PostCard3(post: post),
+                                    );
+                                  },
+                                );
+                              },
+                              loading: () => const Center(
+                                  child: CircularProgressIndicator()),
+                              error: (error, stackTrace) =>
+                                  Center(child: Text('Error: $error')),
+                            ),
+                      ),
                     ),
                   ],
                 ),
               ),
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class CategoryPill extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final Color color;
-
-  const CategoryPill({
-    super.key,
-    required this.icon,
-    required this.label,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(right: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 16),
-          const SizedBox(width: 4),
-          Text(label),
         ],
       ),
     );
