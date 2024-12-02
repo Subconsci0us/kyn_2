@@ -1,8 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kyn_2/features/auth/controller/auth_controller.dart';
 import 'package:kyn_2/features/events/post/controller/post_controller.dart';
 import 'package:kyn_2/features/events/post/screens/comments_screen.dart';
+import 'package:kyn_2/features/settings/screens/user_profile.dart';
 import 'package:kyn_2/models/post_model.dart';
 import 'package:kyn_2/core/constants/constants.dart'; // Ensure Constants is imported
 
@@ -49,11 +51,19 @@ class _PostViewState extends ConsumerState<PostView> {
             Stack(
               children: [
                 // Use the dynamic image URL
-                Image.network(
-                  imageUrl!,
+                CachedNetworkImage(
+                  imageUrl: imageUrl!, // Handle null URL by providing a default
                   height: 250,
                   width: double.infinity,
                   fit: BoxFit.cover,
+                  placeholder: (context, url) => const Center(
+                    child: CircularProgressIndicator(),
+                  ), // Show a loading indicator while the image loads
+                  errorWidget: (context, url, error) => const Icon(
+                    Icons.error,
+                    color: Colors.red,
+                    size: 50,
+                  ), // Display an error icon if the image fails to load
                 ),
                 Container(
                   height: 250,
@@ -103,12 +113,22 @@ class _PostViewState extends ConsumerState<PostView> {
                 children: [
                   Row(
                     children: [
-                      Text(
-                        widget.post.title,
-                        style: const TextStyle(
-                            fontSize: 35, fontWeight: FontWeight.bold),
+                      Expanded(
+                        child: Text(
+                          widget.post.title,
+                          style: const TextStyle(
+                            fontSize: 35,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 2, // Allow up to 2 lines for the title
+                          overflow: TextOverflow
+                              .ellipsis, // Add ellipsis (...) if the text is still too long
+                          softWrap: true, // Enable wrapping to the next line
+                        ),
                       ),
-                      Spacer(),
+                      const SizedBox(
+                          width:
+                              8), // Add some spacing between the text and the icon
                       GestureDetector(
                         onTap: () {
                           Navigator.push(
@@ -125,17 +145,20 @@ class _PostViewState extends ConsumerState<PostView> {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      const CircleAvatar(
-                        radius: 30,
-                        backgroundImage: AssetImage('assets/images/logo.jpg'),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context, UserProfile.route(widget.post.uid));
+                        },
+                        child: const CircleAvatar(
+                          radius: 20,
+                          backgroundImage: AssetImage('assets/images/logo.jpg'),
+                        ),
                       ),
                       const SizedBox(width: 8),
-                      Text(widget.post.username,
-                          style: const TextStyle(fontSize: 16)),
-                      const Spacer(),
-                      TextButton(
-                        onPressed: () {},
-                        child: const Text('Follow'),
+                      Text(
+                        widget.post.username,
+                        style: const TextStyle(fontSize: 16),
                       ),
                     ],
                   ),
@@ -233,8 +256,8 @@ class _PostViewState extends ConsumerState<PostView> {
                       label: const Text("Attending"),
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 32, vertical: 12),
-                        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                            horizontal: 100, vertical: 12),
+//backgroundColor: const Color.fromARGB(255, 0, 0, 0),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),

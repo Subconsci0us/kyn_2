@@ -24,10 +24,9 @@ final postControllerProvider =
   );
 });
 
-final userPostsProvider =
-    StreamProvider.family((ref, List<Community> communities) {
+final userPostsProvider = StreamProvider.family((ref, String uid) {
   final postController = ref.watch(postControllerProvider.notifier);
-  return postController.fetchUserPosts(communities);
+  return postController.fetchUserPosts(uid);
 });
 
 final getPostByIdProvider = StreamProvider.family((ref, String postId) {
@@ -38,6 +37,11 @@ final getPostByIdProvider = StreamProvider.family((ref, String postId) {
 final getPostCommentsProvider = StreamProvider.family((ref, String postId) {
   final postController = ref.watch(postControllerProvider.notifier);
   return postController.fetchPostComments(postId);
+});
+
+final getCommentsProvider = StreamProvider.family((ref, String uid) {
+  final postController = ref.watch(postControllerProvider.notifier);
+  return postController.fetchCommentsOfUserPosts(uid);
 });
 
 class PostController extends StateNotifier<bool> {
@@ -117,11 +121,8 @@ class PostController extends StateNotifier<bool> {
     });
   }
 
-  Stream<List<Post>> fetchUserPosts(List<Community> communities) {
-    if (communities.isNotEmpty) {
-      return _postRepository.fetchUserPosts(communities);
-    }
-    return Stream.value([]);
+  Stream<List<Post>> fetchUserPosts(String uid) {
+    return _postRepository.fetchUserPosts(uid);
   }
 
   void deletePost(Post post, BuildContext context) async {
@@ -171,5 +172,9 @@ class PostController extends StateNotifier<bool> {
 
   Stream<List<Comment>> fetchPostComments(String postId) {
     return _postRepository.getCommentsOfPost(postId);
+  }
+
+  Stream<List<Comment>> fetchCommentsOfUserPosts(String postId) {
+    return _postRepository.getCommentsOfUserPosts(postId);
   }
 }

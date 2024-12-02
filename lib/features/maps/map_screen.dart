@@ -40,20 +40,20 @@ class _MapScreenState extends State<MapScreen> {
   Future<void> _loadCustomMarkers() async {
     emergencyIcon = await BitmapDescriptor.asset(
       const ImageConfiguration(
-        devicePixelRatio: 2.5,
+        devicePixelRatio: 2,
       ),
       'assets/images/emergency.png',
     );
     eventIcon = await BitmapDescriptor.asset(
-      const ImageConfiguration(devicePixelRatio: 2.5),
+      const ImageConfiguration(devicePixelRatio: 2),
       'assets/images/event.png',
     );
     businessIcon = await BitmapDescriptor.asset(
-      const ImageConfiguration(devicePixelRatio: 2.5),
+      const ImageConfiguration(devicePixelRatio: 2),
       'assets/images/business.png',
     );
     servicesIcon = await BitmapDescriptor.asset(
-      const ImageConfiguration(devicePixelRatio: 2.5),
+      const ImageConfiguration(devicePixelRatio: 2),
       'assets/images/service.png',
     );
   }

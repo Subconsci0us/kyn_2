@@ -7,14 +7,14 @@ import 'package:kyn_2/features/events/post/widget/post_card.dart';
 import 'package:kyn_2/features/events/user_profile/controller/user_profile_controller.dart';
 import 'package:kyn_2/features/events/user_profile/screens/edit_profile_screen.dart';
 
-class UserProfileScreen extends ConsumerWidget {
+class UserProfileScreen2 extends ConsumerWidget {
   static Route<dynamic> route(String uid) => MaterialPageRoute(
-        builder: (context) => UserProfileScreen(uid: uid),
+        builder: (context) => UserProfileScreen2(uid: uid),
       );
 
   final String uid;
 
-  const UserProfileScreen({
+  const UserProfileScreen2({
     super.key,
     required this.uid,
   });

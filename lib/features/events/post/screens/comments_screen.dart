@@ -1,7 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kyn_2/core/common/error_text.dart';
 import 'package:kyn_2/core/common/loader.dart';
+import 'package:kyn_2/core/constants/constants.dart';
 import 'package:kyn_2/features/events/post/controller/post_controller.dart';
 import 'package:kyn_2/features/events/post/widget/comment_card.dart';
 import 'package:kyn_2/models/post_model.dart';
@@ -70,22 +72,20 @@ class _CommentsScreenState extends ConsumerState<CommentsScreen> {
     );
   }
 
-  Widget _buildPostImage(Post data) {
+  Widget _buildPostImage(Post post) {
+    String imageURL =
+        post.link ?? Constants().getDefaultImageForCategory(post.category);
     return Stack(
       children: [
-        data.link != null && data.link!.isNotEmpty
-            ? Image.network(
-                data.link!,
-                height: 250,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              )
-            : Image.asset(
-                "assets/images/logo.jpg",
-                height: 250,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
+        // Use CachedNetworkImage first as it provides caching benefits
+        if (post.link != null && post.link!.isNotEmpty)
+          CachedNetworkImage(
+            imageUrl: imageURL,
+            height: 250,
+            width: double.infinity,
+            fit: BoxFit.cover,
+          ),
+        // Semi-transparent overlay
         Container(
           height: 250,
           color: Colors.black.withOpacity(0.5),

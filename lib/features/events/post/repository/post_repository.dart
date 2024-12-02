@@ -36,15 +36,13 @@ class PostRepository {
     }
   }
 
-  Stream<List<Post>> fetchUserPosts(List<Community> communities) {
-    // Stream to listen for posts
+  Stream<List<Post>> fetchUserPosts(String uid) {
+    // Query posts where the userId matches the given uid
     return _posts
-        .where('communityName',
-            whereIn: communities.map((e) => e.name).toList())
-        .orderBy('createdAt', descending: true)
+        .where('uid', isEqualTo: uid) // Filter posts by the user's ID
         .snapshots()
         .asyncMap((snapshot) async {
-      // Convert snapshot to list of posts
+      // Convert snapshot to list of Post objects
       final posts = snapshot.docs
           .map(
             (doc) => Post.fromMap(doc.data() as Map<String, dynamic>),
@@ -124,6 +122,33 @@ class PostRepository {
   Stream<List<Comment>> getCommentsOfPost(String postId) {
     return _comments
         .where('postId', isEqualTo: postId)
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map(
+          (event) => event.docs
+              .map(
+                (e) => Comment.fromMap(
+                  e.data() as Map<String, dynamic>,
+                ),
+              )
+              .toList(),
+        );
+  }
+
+  Stream<List<Comment>> getCommentsOfUserPosts(String uid) async* {
+    // Step 1: Fetch all posts by the specific user
+    final userPostsQuery = await _posts.where('uid', isEqualTo: uid).get();
+    final postIds = userPostsQuery.docs.map((doc) => doc.id).toList();
+
+    if (postIds.isEmpty) {
+      // If the user has no posts, return an empty stream
+      yield [];
+      return;
+    }
+
+    // Step 2: Fetch comments for posts created by the user
+    yield* _comments
+        .where('postId', whereIn: postIds)
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map(
