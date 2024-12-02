@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:intl/intl.dart';
 import 'package:kyn_2/core/constants/constants.dart';
 import 'package:kyn_2/features/events/post/screens/post_view.dart';
 import 'package:kyn_2/models/post_model.dart';
@@ -15,6 +16,8 @@ class PostCard3 extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final formattedDate =
+        DateFormat('dd MMMM yyyy, h:mm a').format(post.createdAt);
     String imageUrl =
         post.link ?? Constants().getDefaultImageForCategory(post.category);
 
@@ -78,7 +81,7 @@ class PostCard3 extends ConsumerWidget {
                       const SizedBox(height: 4),
                       // Date and Time
                       Text(
-                        "Fri, Dec 23, 2:00 PM",
+                        formattedDate,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               fontFamily: 'jakarta',
                               color:
@@ -88,7 +91,7 @@ class PostCard3 extends ConsumerWidget {
                       const SizedBox(height: 4),
                       // Location or subtitle
                       Text(
-                        "Montreal.ai",
+                        post.username,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               fontFamily: 'jakarta',
 

@@ -109,7 +109,7 @@ class PostCard4 extends StatelessWidget {
                     // Subtitle (formatted date)
                     Text(
                       formattedDate,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white70,
                         fontSize: 14,
                       ),

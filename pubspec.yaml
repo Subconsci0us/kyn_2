@@ -63,6 +63,7 @@ dependencies:
   http: ^1.2.2
   geolocator: ^13.0.2
   carousel_slider: ^5.0.0
+  geocoding: ^3.0.0
  
   
   

@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:intl/intl.dart';
 import 'package:kyn_2/features/auth/controller/auth_controller.dart';
 import 'package:kyn_2/features/events/post/controller/post_controller.dart';
 import 'package:kyn_2/features/events/post/screens/comments_screen.dart';
@@ -27,6 +29,10 @@ class PostView extends ConsumerStatefulWidget {
 class _PostViewState extends ConsumerState<PostView> {
   bool showFullDescription = false;
   Status _status = Status.notgoing; // Default to 'interested'
+  String address = "";
+  double? lat;
+
+  double? long;
 
   void deletePost(BuildContext context) async {
     ref.read(postControllerProvider.notifier).deletePost(widget.post, context);
@@ -40,8 +46,34 @@ class _PostViewState extends ConsumerState<PostView> {
     ref.read(postControllerProvider.notifier).rsvp_post(widget.post, status);
   }
 
+  // Function to fetch the address using latitude and longitude
+  Future<void> getAddress(double lat, double long) async {
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(lat, long);
+      setState(() {
+        address = "${placemarks[0].street}, ${placemarks[0].country}";
+      });
+    } catch (e) {
+      print("Error fetching address: $e");
+      setState(() {
+        address = "Unable to fetch address";
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Extract latitude and longitude from widget's position and fetch address
+    final geoPoint = widget.post.position!['geopoint'];
+    getAddress(geoPoint.latitude, geoPoint.longitude);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final formattedDate =
+        DateFormat('dd MMMM yyyy, h:mm a').format(widget.post.createdAt);
     final user = ref.watch(userProvider);
 
     // Get the default image URL based on the post's category
@@ -169,56 +201,39 @@ class _PostViewState extends ConsumerState<PostView> {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  const Column(
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.calendar_today,
                             color: Colors.black,
                             size: 30,
                           ),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                           Text(
-                            '14 December, 2021',
-                            style: TextStyle(
+                            formattedDate,
+                            style: const TextStyle(
                               fontSize: 16,
                             ),
                           ),
                         ],
                       ),
-                      SizedBox(height: 12),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.access_time,
-                            color: Colors.black,
-                            size: 30,
-                          ),
-                          SizedBox(width: 8),
-                          Text(
-                            '4:00PM - 9:00PM',
-                            style: TextStyle(
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 12),
+                      const SizedBox(height: 12),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.location_on,
                             color: Colors.black,
                             size: 30,
                           ),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              'Gala Convention Center, 36 Guild Street, London, UK',
-                              style: TextStyle(
+                              address,
+                              style: const TextStyle(
                                 fontSize: 16,
                               ),
                             ),
@@ -229,7 +244,7 @@ class _PostViewState extends ConsumerState<PostView> {
                   ),
                   const SizedBox(height: 16),
                   const Text(
-                    'About Event',
+                    'About Post',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
@@ -259,7 +274,7 @@ class _PostViewState extends ConsumerState<PostView> {
                         ),
                       ),
                     ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 50),
 
                   // Toggle Button for RSVP status
                   Center(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:intl/intl.dart';
 import 'package:kyn_2/core/constants/constants.dart';
 import 'package:kyn_2/features/events/post/screens/post_view.dart';
 import 'package:kyn_2/models/post_model.dart';
@@ -15,6 +16,8 @@ class PostCard2 extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final formattedDate =
+        DateFormat('dd MMMM yyyy, h:mm a').format(post.createdAt);
     // Get the default image based on category
     String imageUrl =
         post.link ?? Constants().getDefaultImageForCategory(post.category);
@@ -73,7 +76,7 @@ class PostCard2 extends ConsumerWidget {
                     const SizedBox(height: 4),
                     // Location (or date, if that's what you want to display here)
                     Text(
-                      "Wed, Dec 22, 4:00 PM", // Assuming `post.date` is a formatted date string
+                      formattedDate, // Assuming `post.date` is a formatted date string
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             fontFamily: 'jakarta', // Apply Jakarta font
                             color: Colors.grey,
