@@ -9,6 +9,7 @@ import 'package:kyn_2/features/events/post/repository/post_repository.dart';
 import 'package:kyn_2/features/events/user_profile/controller/user_profile_controller.dart';
 import 'package:kyn_2/models/comment_model.dart';
 import 'package:kyn_2/models/post_model.dart';
+import 'package:kyn_2/models/rsvp_model.dart';
 
 import 'package:uuid/uuid.dart';
 
@@ -136,6 +137,11 @@ class PostController extends StateNotifier<bool> {
   void upvote(Post post) async {
     final uid = _ref.read(userProvider)!.uid;
     _postRepository.upvote(post, uid);
+  }
+
+  void rsvp_post(Post post, Status status) async {
+    final uid = _ref.read(userProvider)!.uid;
+    _postRepository.rsvp_post(post, uid, status);
   }
 
   void downvote(Post post) async {

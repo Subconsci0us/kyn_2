@@ -40,7 +40,6 @@ class UserModel {
       uid: uid ?? this.uid,
       isAuthenticated: isAuthenticated ?? this.isAuthenticated,
       karma: karma ?? this.karma,
-
       userType: userType ?? this.userType, // Added userType field
     );
   }

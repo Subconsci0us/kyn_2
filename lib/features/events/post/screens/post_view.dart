@@ -4,9 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kyn_2/features/auth/controller/auth_controller.dart';
 import 'package:kyn_2/features/events/post/controller/post_controller.dart';
 import 'package:kyn_2/features/events/post/screens/comments_screen.dart';
-import 'package:kyn_2/features/settings/screens/user_profile.dart';
+import 'package:kyn_2/features/events/user_profile/screens/user_profile.dart';
 import 'package:kyn_2/models/post_model.dart';
-import 'package:kyn_2/core/constants/constants.dart'; // Ensure Constants is imported
+import 'package:kyn_2/core/constants/constants.dart';
+import 'package:kyn_2/models/rsvp_model.dart'; // Ensure Constants is imported
 
 class PostView extends ConsumerStatefulWidget {
   final Post post;
@@ -25,6 +26,7 @@ class PostView extends ConsumerStatefulWidget {
 
 class _PostViewState extends ConsumerState<PostView> {
   bool showFullDescription = false;
+  Status _status = Status.notgoing; // Default to 'interested'
 
   void deletePost(BuildContext context) async {
     ref.read(postControllerProvider.notifier).deletePost(widget.post, context);
@@ -32,6 +34,10 @@ class _PostViewState extends ConsumerState<PostView> {
 
   void upvotePost(WidgetRef ref) async {
     ref.read(postControllerProvider.notifier).upvote(widget.post);
+  }
+
+  void rsvp_post(WidgetRef ref, Status status) async {
+    ref.read(postControllerProvider.notifier).rsvp_post(widget.post, status);
   }
 
   @override
@@ -117,7 +123,7 @@ class _PostViewState extends ConsumerState<PostView> {
                         child: Text(
                           widget.post.title,
                           style: const TextStyle(
-                            fontSize: 35,
+                            fontSize: 27,
                             fontWeight: FontWeight.bold,
                           ),
                           maxLines: 2, // Allow up to 2 lines for the title
@@ -233,7 +239,8 @@ class _PostViewState extends ConsumerState<PostView> {
                         : (widget.post.description ?? "").length > 650
                             ? "${widget.post.description!.substring(0, 650)}..."
                             : widget.post.description ?? "",
-                    style: TextStyle(color: Colors.grey[700]),
+                    style:
+                        const TextStyle(color: Color.fromARGB(255, 48, 48, 48)),
                   ),
                   const SizedBox(height: 8),
                   if ((widget.post.description ?? "").length > 100)
@@ -244,26 +251,84 @@ class _PostViewState extends ConsumerState<PostView> {
                         });
                       },
                       child: Center(
-                        child: Text(
-                          showFullDescription ? "Show Less" : "View More",
+                        child: Icon(
+                          showFullDescription
+                              ? Icons.keyboard_arrow_up_outlined
+                              : Icons.keyboard_arrow_down_outlined,
+                          color: const Color.fromARGB(255, 90, 90, 90),
                         ),
                       ),
                     ),
                   const SizedBox(height: 16),
+
+                  // Toggle Button for RSVP status
                   Center(
-                    child: ElevatedButton.icon(
-                      onPressed: () {},
-                      label: const Text("Attending"),
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 100, vertical: 12),
-//backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                    child: ToggleButtons(
+                      isSelected: [
+                        _status == Status.notgoing,
+                        _status == Status.interested,
+                        _status == Status.going
+                      ],
+                      onPressed: (int index) {
+                        setState(() {
+                          if (index == 0) {
+                            _status = Status.notgoing;
+                          } else if (index == 1) {
+                            _status = Status.interested;
+                          } else if (index == 2) {
+                            _status = Status.going;
+                          }
+
+                          // Call RSVP function when a status is selected
+                          rsvp_post(ref, _status);
+                        });
+                      },
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 24.0, vertical: 12.0),
+                          child: Text(
+                            'Not Going',
+                            style: TextStyle(fontSize: 16.0),
+                          ),
                         ),
-                      ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 24.0, vertical: 12.0),
+                          child: Text(
+                            'Interested',
+                            style: TextStyle(fontSize: 16.0),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 24.0, vertical: 12.0),
+                          child: Text(
+                            'Going',
+                            style: TextStyle(fontSize: 16.0),
+                          ),
+                        ),
+                      ],
+                      borderRadius: BorderRadius.circular(8),
+                      selectedColor: Colors.white,
+                      color: Colors.grey[700],
+                      fillColor: (_status == Status.interested)
+                          ? Colors.blue[600]
+                          : (_status == Status.going)
+                              ? Colors.green[600]
+                              : Colors.grey[700],
+                      borderColor: (_status == Status.interested)
+                          ? Colors.blue[600]
+                          : (_status == Status.going)
+                              ? Colors.green[600]
+                              : Colors.grey[700],
+                      selectedBorderColor: (_status == Status.interested)
+                          ? Colors.blue[600]
+                          : (_status == Status.going)
+                              ? Colors.green[600]
+                              : Colors.grey[700],
                     ),
-                  ),
+                  )
                 ],
               ),
             ),

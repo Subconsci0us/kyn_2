@@ -7,6 +7,7 @@ import 'package:kyn_2/core/providers/firebase_providers.dart';
 import 'package:kyn_2/core/type_defs.dart';
 import 'package:kyn_2/models/comment_model.dart';
 import 'package:kyn_2/models/post_model.dart';
+import 'package:kyn_2/models/rsvp_model.dart';
 
 final postRepositoryProvider = Provider((ref) {
   return PostRepository(
@@ -94,6 +95,43 @@ class PostRepository {
       _posts.doc(post.id).update({
         'downvotes': FieldValue.arrayUnion([userId]),
       });
+    }
+  }
+
+  void rsvp_post(Post post, String userId, Status newStatus) async {
+    final rsvpCollection = FirebaseFirestore.instance.collection('rsvps');
+    final query = rsvpCollection
+        .where('userId', isEqualTo: userId)
+        .where('postId', isEqualTo: post.id);
+
+    final querySnapshot = await query.get();
+
+    if (newStatus == Status.notgoing) {
+      // Remove RSVP if the user chooses 'not going'
+      if (querySnapshot.docs.isNotEmpty) {
+        for (var doc in querySnapshot.docs) {
+          await rsvpCollection.doc(doc.id).delete();
+        }
+      }
+    } else {
+      // Add or update RSVP
+      if (querySnapshot.docs.isNotEmpty) {
+        // Update existing RSVP
+        for (var doc in querySnapshot.docs) {
+          await rsvpCollection.doc(doc.id).update({
+            'status': newStatus.name,
+            'timestamp': Timestamp.now(),
+          });
+        }
+      } else {
+        // Add new RSVP
+        await rsvpCollection.add({
+          'userId': userId,
+          'postId': post.id,
+          'status': newStatus.name,
+          'timestamp': Timestamp.now(),
+        });
+      }
     }
   }
 
