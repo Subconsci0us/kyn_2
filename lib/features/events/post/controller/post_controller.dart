@@ -8,7 +8,6 @@ import 'package:kyn_2/features/auth/controller/auth_controller.dart';
 import 'package:kyn_2/features/events/post/repository/post_repository.dart';
 import 'package:kyn_2/features/events/user_profile/controller/user_profile_controller.dart';
 import 'package:kyn_2/models/comment_model.dart';
-import 'package:kyn_2/models/community_model.dart';
 import 'package:kyn_2/models/post_model.dart';
 
 import 'package:uuid/uuid.dart';

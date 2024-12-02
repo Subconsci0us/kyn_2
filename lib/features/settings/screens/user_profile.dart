@@ -5,8 +5,6 @@ import 'package:kyn_2/features/events/post/controller/post_controller.dart';
 import 'package:kyn_2/features/events/post/screens/comments_screen.dart';
 import 'package:kyn_2/features/events/post/widget/comment_card.dart';
 import 'package:kyn_2/features/events/post/widget/post_card_3.dart';
-import 'package:kyn_2/models/post_model.dart';
-import 'package:kyn_2/models/comment_model.dart';
 
 class UserProfile extends ConsumerWidget {
   final String uid;
@@ -51,7 +49,7 @@ class UserProfile extends ConsumerWidget {
                   const SizedBox(height: 10),
                   // Name
                   Text(
-                    user.name ?? 'User Name', // Replace with dynamic name
+                    user.name,
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -102,10 +100,6 @@ class UserProfile extends ConsumerWidget {
                                   itemBuilder:
                                       (BuildContext context, int index) {
                                     final post = postList[index];
-
-                                    if (post == null) {
-                                      return const SizedBox.shrink();
-                                    }
 
                                     return Padding(
                                       padding: const EdgeInsets.only(right: 12),

@@ -6,7 +6,6 @@ import 'package:kyn_2/core/failure.dart';
 import 'package:kyn_2/core/providers/firebase_providers.dart';
 import 'package:kyn_2/core/type_defs.dart';
 import 'package:kyn_2/models/comment_model.dart';
-import 'package:kyn_2/models/community_model.dart';
 import 'package:kyn_2/models/post_model.dart';
 
 final postRepositoryProvider = Provider((ref) {
