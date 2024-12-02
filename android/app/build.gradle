@@ -10,7 +10,7 @@ plugins {
 
 android {
     namespace = "com.example.kyn_2"
-    compileSdk = flutter.compileSdkVersion
+    compileSdkVersion 34
     ndkVersion = flutter.ndkVersion
 
     compileOptions {

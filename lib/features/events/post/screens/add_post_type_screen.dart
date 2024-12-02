@@ -9,6 +9,7 @@ import 'package:kyn_2/core/theme/pallete.dart';
 import 'package:kyn_2/core/theme/theme.dart';
 import 'package:kyn_2/core/utils.dart';
 import 'package:kyn_2/features/events/post/controller/post_controller.dart';
+import 'package:kyn_2/features/events/post/screens/select_location.dart';
 import 'package:kyn_2/models/post_model.dart';
 import 'package:location/location.dart';
 
@@ -193,14 +194,24 @@ class _AddPostTypeScreenState extends ConsumerState<AddPostTypeScreen> {
 
                   // Location
                   ElevatedButton(
-                    onPressed: () {
-                      print("Button pressed!");
-                      addLocation();
+                    onPressed: () async {
+                      // Wait for the result from SelectLocation
+                      var selectedPosition = await Navigator.push(
+                        context,
+                        SelectLocation.route(),
+                      );
+
+                      // If a location was selected, update the state
+                      if (selectedPosition != null) {
+                        setState(() {
+                          position = selectedPosition;
+                        });
+                      }
                     },
                     child: Text(
                       position == null
                           ? 'Tap to get location'
-                          : 'Lat: ${position!['latitude']}, Long: ${position!['longitude']}',
+                          : 'Location Selected!',
                     ),
                   ),
                   const SizedBox(height: 16),
