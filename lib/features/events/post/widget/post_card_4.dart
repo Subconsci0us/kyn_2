@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:intl/intl.dart';
 import 'package:kyn_2/models/post_model.dart';
 import 'package:kyn_2/features/events/post/screens/post_view.dart';
 import 'package:kyn_2/core/constants/constants.dart';
@@ -14,6 +15,9 @@ class PostCard4 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final formattedDate =
+        DateFormat('dd MMMM yyyy, h:mm a').format(post.createdAt);
+
     String imageUrl =
         post.link ?? Constants().getDefaultImageForCategory(post.category);
 
@@ -103,19 +107,10 @@ class PostCard4 extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     // Subtitle (formatted date)
-                    const Text(
-                      "Fri, Dec 23, 2:00 PM",
+                    Text(
+                      formattedDate,
                       style: TextStyle(
                         color: Colors.white70,
-                        fontSize: 14,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    // Location or additional info
-                    const Text(
-                      "36 Guild Street London, UK ",
-                      style: TextStyle(
-                        color: Colors.white60,
                         fontSize: 14,
                       ),
                     ),

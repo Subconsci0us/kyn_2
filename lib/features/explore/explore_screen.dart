@@ -1,3 +1,4 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kyn_2/features/auth/controller/auth_controller.dart';
@@ -6,11 +7,18 @@ import 'package:kyn_2/features/events/post/widget/post_card_2.dart';
 import 'package:kyn_2/features/events/post/widget/post_card_3.dart';
 import 'package:kyn_2/features/events/post/widget/post_card_4.dart';
 
-class HomePage extends ConsumerWidget {
-  const HomePage({super.key});
+class HomePage extends ConsumerStatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends ConsumerState<HomePage> {
+  int _currentIndex = 0; // Track the current index in the carousel
+
+  @override
+  Widget build(BuildContext context) {
     final user = ref.watch(userProvider);
 
     return Scaffold(
@@ -49,45 +57,73 @@ class HomePage extends ConsumerWidget {
                         ),
                       ),
                     ),
-                    // Event Cards Section
+                    // Emergency Carousel Section
                     Padding(
                       padding: const EdgeInsets.only(bottom: 10),
-                      child: SizedBox(
-                        height: 270,
-                        child: ref.watch(getAllEmergencyonly).when(
-                              data: (posts) {
-                                if (posts.isEmpty) {
-                                  return const Center(
-                                      child: Text('No posts available',
-                                          style: TextStyle(fontSize: 18)));
-                                }
-
-                                final latestPosts = posts.take(5).toList();
-
-                                return ListView.builder(
-                                  itemCount: latestPosts.length,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    final post = latestPosts[index];
-
-                                    if (post == null) {
-                                      return const SizedBox.shrink();
-                                    }
-
-                                    return Padding(
-                                      padding:
-                                          const EdgeInsets.only(bottom: 12),
-                                      child: PostCard4(post: post),
-                                    );
-                                  },
+                      child: ref.watch(getAllEmergencyonly).when(
+                            data: (posts) {
+                              if (posts.isEmpty) {
+                                return const Center(
+                                  child: Text(
+                                    'No posts available',
+                                    style: TextStyle(fontSize: 18),
+                                  ),
                                 );
-                              },
-                              loading: () => const Center(
-                                  child: CircularProgressIndicator()),
-                              error: (error, stackTrace) =>
-                                  Center(child: Text('Error: $error')),
-                            ),
-                      ),
+                              }
+
+                              final latestPosts = posts.take(5).toList();
+
+                              return Column(
+                                children: [
+                                  CarouselSlider.builder(
+                                    itemCount: latestPosts.length,
+                                    itemBuilder: (context, index, realIndex) {
+                                      final post = latestPosts[index];
+                                      return PostCard4(post: post);
+                                    },
+                                    options: CarouselOptions(
+                                      autoPlay: true,
+                                      height: 270,
+                                      enlargeCenterPage: true,
+                                      viewportFraction: 1,
+                                      aspectRatio: 16 / 9,
+                                      onPageChanged: (index, reason) {
+                                        setState(() {
+                                          _currentIndex = index;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: List.generate(
+                                      latestPosts.length,
+                                      (index) => AnimatedContainer(
+                                        duration:
+                                            const Duration(milliseconds: 300),
+                                        margin: const EdgeInsets.symmetric(
+                                            horizontal: 4.0),
+                                        height: 8.0,
+                                        width:
+                                            _currentIndex == index ? 12.0 : 8.0,
+                                        decoration: BoxDecoration(
+                                          color: _currentIndex == index
+                                              ? Colors.black
+                                              : Colors.grey,
+                                          shape: BoxShape.circle,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                            loading: () => const Center(
+                                child: CircularProgressIndicator()),
+                            error: (error, stackTrace) =>
+                                Center(child: Text('Error: $error')),
+                          ),
                     ),
                     // Upcoming Events Section
                     const Padding(

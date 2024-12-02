@@ -17,12 +17,12 @@ class _MapScreenState extends State<MapScreen> {
   late GoogleMapController _mapController;
   final Location _location = Location();
 
-  double _radiusInKm = 0.2;
+  double _radiusInKm = 1.0; // Set default radius
   LatLng _currentPosition = const LatLng(24.8607, 67.0011);
 
   final List<Marker> _allMarkers = [];
   final Set<Marker> _displayedMarkers = {};
-  Post? _selectedPost; // To store the currently selected post
+  Post? _selectedPost;
 
   BitmapDescriptor? emergencyIcon;
   BitmapDescriptor? eventIcon;
@@ -32,53 +32,48 @@ class _MapScreenState extends State<MapScreen> {
   @override
   void initState() {
     super.initState();
-    _loadCustomMarkers(); // Load the custom markers
+    _loadCustomMarkers();
     _initializeMap();
   }
 
-  // Load custom marker icons for each category
   Future<void> _loadCustomMarkers() async {
     emergencyIcon = await BitmapDescriptor.asset(
-      const ImageConfiguration(
-        devicePixelRatio: 2,
-      ),
+      const ImageConfiguration(devicePixelRatio: 2.5, size: Size(70, 70)),
       'assets/images/emergency.png',
     );
     eventIcon = await BitmapDescriptor.asset(
-      const ImageConfiguration(devicePixelRatio: 2),
+      const ImageConfiguration(devicePixelRatio: 2.5, size: Size(70, 70)),
       'assets/images/event.png',
     );
     businessIcon = await BitmapDescriptor.asset(
-      const ImageConfiguration(devicePixelRatio: 2),
+      const ImageConfiguration(devicePixelRatio: 2.5, size: Size(70, 70)),
       'assets/images/business.png',
     );
     servicesIcon = await BitmapDescriptor.asset(
-      const ImageConfiguration(devicePixelRatio: 2),
+      const ImageConfiguration(devicePixelRatio: 2.5, size: Size(70, 70)),
       'assets/images/service.png',
     );
+    setState(() {});
   }
 
-  // Get the correct marker icon based on the post category
-  BitmapDescriptor _getCategoryIcon(Category category) {
+  BitmapDescriptor? _getCategoryIcon(Category category) {
     switch (category) {
       case Category.Emergency:
-        return emergencyIcon!;
+        return emergencyIcon;
       case Category.Event:
-        return eventIcon!;
+        return eventIcon;
       case Category.Business:
-        return businessIcon!;
+        return businessIcon;
       case Category.Services:
-        return servicesIcon!;
+        return servicesIcon;
     }
   }
 
-  // Initialize the map and get the current location
   Future<void> _initializeMap() async {
     await _loadMarkers();
     await _getCurrentLocation();
   }
 
-  // Get the current location of the user
   Future<void> _getCurrentLocation() async {
     try {
       final pos = await _location.getLocation();
@@ -99,7 +94,6 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
-  // Filter markers by radius
   void _filterMarkersByRadius() {
     setState(() {
       _displayedMarkers.clear();
@@ -110,7 +104,6 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
-  // Calculate distance between two points
   double _calculateDistance(LatLng point1, LatLng point2) {
     const earthRadius = 6371.0;
     final lat1 = point1.latitude * (math.pi / 180);
@@ -130,16 +123,19 @@ class _MapScreenState extends State<MapScreen> {
     return earthRadius * c;
   }
 
-  // Load markers from Firestore
   Future<void> _loadMarkers() async {
     try {
       final snapshot =
           await FirebaseFirestore.instance.collection('posts').get();
 
       for (var doc in snapshot.docs) {
-        final geoPoint = doc.data()['position']['geopoint'] as GeoPoint;
+        final data = doc.data();
+
+        final geoPoint = data['position']['geopoint'] as GeoPoint?;
+        if (geoPoint == null) continue;
+
         final position = LatLng(geoPoint.latitude, geoPoint.longitude);
-        final post = Post.fromMap(doc.data());
+        final post = Post.fromMap(data);
         _addMarker(position, post.title, post);
       }
 
@@ -149,9 +145,9 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
-  // Add a marker to the map
   void _addMarker(LatLng position, String title, Post post) {
-    final markerIcon = _getCategoryIcon(post.category);
+    final markerIcon =
+        _getCategoryIcon(post.category) ?? BitmapDescriptor.defaultMarker;
 
     final marker = Marker(
       markerId: MarkerId(UniqueKey().toString()),
@@ -190,51 +186,69 @@ class _MapScreenState extends State<MapScreen> {
                 fillColor: Colors.blue.withOpacity(0.1),
                 strokeColor: Colors.blue,
                 strokeWidth: 2,
-              )
+              ),
             },
-            onTap: (LatLng position) {
+            onTap: (_) {
               setState(() {
-                _selectedPost =
-                    null; // Deselect the post card when the map is tapped
+                _selectedPost = null;
               });
             },
           ),
           Positioned(
             top: 16,
             left: 16,
-            right: 70,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.8),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Column(
-                children: [
-                  Text('Radius: ${_radiusInKm.toStringAsFixed(1)} km'),
-                  Slider(
-                    value: _radiusInKm.clamp(
-                        1.0, 30.0), // Ensure the value is within bounds
-                    min: 1.0,
-                    max: 30.0, // Update the max value here
-                    divisions: 100, // Adjust based on the new range
-                    label: _radiusInKm.toStringAsFixed(1),
-                    onChanged: (value) {
-                      setState(() {
-                        _radiusInKm = value;
-                        _filterMarkersByRadius();
-                      });
-                    },
-                  ),
-                ],
+            right: 16,
+            child: Center(
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.8),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  'Radius: ${_radiusInKm.toStringAsFixed(1)} km',
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold),
+                ),
               ),
             ),
           ),
+          Positioned(
+              top: 350,
+              right: 7,
+              bottom: 120,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.8),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    RotatedBox(
+                      quarterTurns: 3, // Rotates the slider vertically
+                      child: Slider(
+                        value: _radiusInKm,
+                        min: 1.0,
+                        max: 25.0,
+                        divisions: 150,
+                        onChanged: (value) {
+                          setState(() {
+                            _radiusInKm = value;
+                            _filterMarkersByRadius();
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              )),
           if (_selectedPost != null)
             Positioned(
-              bottom: 55,
-              left: 35,
-              right: 35,
-              child: PostCard(post: _selectedPost!), // Display the PostCard
+              bottom: 70,
+              left: 10,
+              right: 60,
+              child: PostCard(post: _selectedPost!),
             ),
         ],
       ),
