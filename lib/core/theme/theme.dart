@@ -17,6 +17,7 @@ class Palette {
   static const Color primaryAccentDark = Color(0xFF4DB6AC);
   static const Color lightText = Color(0xFF333333);
   static const Color darkText = Color(0xFFE0E0E0);
+  static const Color indicatorColor = Color(0x1C142B);
 
   // Jakarta font-based TextTheme
   static const String fontFamilyJakarta = 'jakarta';
@@ -67,7 +68,7 @@ class Palette {
       errorBorder: _border(Colors.red),
     ),
     primaryColor: primaryAccentLight,
-    indicatorColor: lightBackground,
+    indicatorColor: indicatorColor,
     textTheme: jakartaTextTheme.copyWith(
       headlineLarge: jakartaTextTheme.headlineLarge?.copyWith(color: lightText),
     ),

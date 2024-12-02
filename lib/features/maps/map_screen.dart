@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:kyn_2/features/events/post/widget/post_card.dart';
+import 'package:kyn_2/features/events/post/widget/post_card_2.dart';
+import 'package:kyn_2/features/events/post/widget/post_card_3.dart';
 import 'package:kyn_2/models/post_model.dart';
 import 'package:location/location.dart';
 
@@ -167,7 +169,11 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Center(child: Text('Around you'))),
+      appBar: AppBar(
+        centerTitle: true,
+        title: const Text("Around you",
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+      ),
       body: Stack(
         children: [
           GoogleMap(
@@ -248,7 +254,7 @@ class _MapScreenState extends State<MapScreen> {
               bottom: 70,
               left: 10,
               right: 60,
-              child: PostCard(post: _selectedPost!),
+              child: PostCard3(post: _selectedPost!),
             ),
         ],
       ),

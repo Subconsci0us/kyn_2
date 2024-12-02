@@ -27,7 +27,7 @@ class PostCard2 extends ConsumerWidget {
         Navigator.push(context, PostView.route(post));
       },
       child: SizedBox(
-        height: 220, // Set the card height
+        height: 230, // Set the card height
         width: 270, // Set the card width
         child: Card(
           color: const Color(0xFFF7F7F7),
