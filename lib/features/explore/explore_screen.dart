@@ -6,6 +6,7 @@ import 'package:kyn_2/features/events/community/controller/community_controller.
 import 'package:kyn_2/features/events/post/widget/post_card_2.dart';
 import 'package:kyn_2/features/events/post/widget/post_card_3.dart';
 import 'package:kyn_2/features/events/post/widget/post_card_4.dart';
+import 'package:kyn_2/features/explore/notification.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -30,7 +31,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           IconButton(
             icon: const Icon(Icons.notifications_active, size: 28),
             onPressed: () {
-              // Add your notification action here
+              Navigator.push(context, NotificationScreen.route());
             },
           ),
         ],

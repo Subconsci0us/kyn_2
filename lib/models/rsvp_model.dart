@@ -37,14 +37,4 @@ class RSVP {
       ),
     );
   }
-
-  /*
-
-  // Create RSVP object from Firestore document snapshot
-  factory RSVP.fromSnapshot(DocumentSnapshot snapshot) {
-    final data = snapshot.data() as Map<String, dynamic>;
-    return RSVP.fromMap(data);
-  }
-
-  */
 }
